@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>瀑布流</title>
+    <style>
+    .waterfall {
+        position: relative;
+        background: #fff;
+        box-shadow: 0 0 5px 0 #ccc;
+    }
+    .waterfall-item {
+        position: absolute;
+        color: #fff;
+        text-align: center;
+    }
+    .test {
+        float: left;
+        width: 100px;
+        height: 100px;
+        border: 1px solid #ccc;
+    }
+    </style>
+</head>
+<body>
+    <script>
+    function randomColor () {
+        function _color () {
+            return Math.round(Math.random()*254); //0-254
+        }
+        return 'rgb(' + _color() + ',' + _color() + ',' + _color() + ')';
+    }
+
+    function Waterfall (column=2, margin=10) {
+        this.column   = column; //列数
+        this.margin   = margin; //边距
+        this.heights  = [];     //每列当前高度
+        for (var i=0; i<column; i++) {
+            this.heights.push(this.margin);
+        }
+    }
+
+    Waterfall.prototype.insert = function(height, index) {
+        var shortColumn = 0;
+        for (var i=1; i<this.heights.length; i++) {
+            if (this.heights[i] < this.heights[shortColumn]) {
+                shortColumn = i;
+            }
+        }
+        var style = [
+            'top:' + this.heights[shortColumn] + 'px',
+            'left:calc(' + 100/this.column*shortColumn + '% + '+ (this.margin - (this.margin/this.column)*shortColumn) + 'px)',
+            'height:' + height + 'px',
+            'width:calc(' + 100/this.column + '% - ' + (this.column + 1)/this.column*this.margin + 'px)',
+            'background:' + randomColor()
+        ];
+        this.heights[shortColumn] += height + this.margin;
+
+        return '<div class="waterfall-item" style="' + style.join(';') + '">' + index + '</div>';
+    };    
+
+    Waterfall.prototype.layout = function(number) {
+        var cellCode = '';
+        for (var i=0; i<number; i++) {
+            var height = 30 + Math.random()*70; //随机高度30-100
+            cellCode += this.insert(height, i);
+        }
+        var htmlCode = '<div class="waterfall" style="height:' + this.heights.sort()[this.column - 1] + 'px">';
+        htmlCode += cellCode + '</div>';
+        document.body.innerHTML = htmlCode;
+    };
+
+    var waterfall = new Waterfall(4);
+    waterfall.layout(30);
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>中文排序</title>
+</head>
+<body>
+    <script>
+    function chineseSort(list) {
+        list.sort((c1, c2) => c1.localeCompare(c2, 'zh'));
+    }
+
+    var array = ['北京', '上海', '广州', '深圳', '张家口', '天津', '海南',
+    '天台', '遂宁市', '包头市', '开封市', '资阳市', '玉溪市', '焦作市', '鹤壁市', 
+    '桂林市', '江油市', '秦皇岛市', '亳州市', '合肥', '海口', '张家界'];
+    chineseSort(array);
+    console.log(array);
+    </script>
+</body>
+</html>

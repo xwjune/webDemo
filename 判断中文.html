@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+	<input type="text" id="code">
+	<button onclick="judge()">查询</button>
+    <script>
+	function chkstrlen (str) {
+		var strlen = 0;
+		for (var i=0; i<str.length; i++) {
+			//遍历判断字符串中每个字符的Unicode码,大于255则为中文，如果是汉字，则字符串长度加2
+			if(str.charCodeAt(i) > 255) stlen += 2;
+			else strlen++;		
+		}
+		return strlen;
+	}
+
+	// escape对字符串进行编码时，字符值大于255的以"%u****"格式存储，而字符值大于255的恰好是非英文字符（一般是中文字符，非中文字符也可以当作中文字符考虑）；indexOf用以判断在字符串中是否存在某子字符串，找不到返回"-1"。
+	function hasChinese (str) {
+		//return escape(str).indexOf('%u') > -1;
+		return /[^\u0000-\u00FF]/.test(str);
+	}
+
+	// 首先在正则表达式中使用 Unicode，必须使用\u开头，接着是字符编码的四位16进制表现形式
+	/* 
+	简单匹配中文方法: /[^\u0000-\u00FF]/ (匹配非单字节字符 ) 
+	u0000-u00ff.包含unicode单字节编码（ 0-255编码）包含基本控制字符和拉丁文字母。 采用该否定表达式，粗略判断是否含有中文。
+	*/
+
+    function isChinese (temp) {
+    // 判断中文字符（不包括标点符号）
+    //u4e00-u9fbf :  unicode CJK(中日韩)统一表意字符。u9fa5后至u9fbf为空uF900-uFAFF :  为unicode  CJK 兼容象形文字  。uFA2D后至uFAFF为空
+        var re = /[\u4e00-\u9fa5\uF900-\uFA2D]/gi;
+        return re.test(temp); 
+    }
+    // 是否含有全角符号的函数
+	function isFullwidthChar(str){
+   		var reg = /[\uFF00-\uFFEF]/;
+   		return reg.test(str);
+	} 
+
+	function judge () {
+		if (hasChinese(document.getElementById('code').value)) {
+			alert('hasChinese');
+		}
+	}
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>类的原型方法</title>
+</head>
+<body>
+    <script>
+        /*
+            this的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定this到底指向谁，实际上this的最终指向的是那个调用它的对象
+        */
+        // 1
+        class Test {
+            static bar () { // 类的静态方法
+                console.log('bar');
+            }
+
+            constructor (name) {
+                this.name = name;
+            }
+            
+            getName () {
+                console.log(this.name);
+            }
+        }
+        const test = new Test('test');
+        const { getName } = test; // getName从test的原型中获取
+        // const getName = test.getName;
+        // getName(); // this会指向该方法运行时所在的环境，因为找不到getName方法而导致报错。
+        Test.bar();
+
+        // 2
+        class Test1 {
+            constructor (name) {
+                this.name = name;
+                this.getName1 = this.getName1.bind(this); // 改变this指向
+            }
+
+            getName1 () {
+                console.log(this.name);
+            }
+        }
+        const test1 = new Test1('test1');
+        const { getName1 } = test1; // getName1从test1的实例中获取
+        getName1(); // test1
+
+    </script>
+</body>
+</html>

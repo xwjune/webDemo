@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+	
+	<img src="favicon@2x.png">
+	<img src="" id="test">
+	
+	<script>
+
+ 	/**
+	 * 将图片转换为Base64
+	 */
+	function image2Base64(img) {
+	    var canvas = document.createElement("canvas");
+	    canvas.width = img.width;
+	    canvas.height = img.height;
+	    var ctx = canvas.getContext("2d");
+	    ctx.drawImage(img, 0, 0, img.width, img.height);
+	    var dataURL = canvas.toDataURL("image/png");
+	    return dataURL;
+	}
+
+	/**
+	 * 获取图片Base64编码
+	 */
+	function getImgBase64(){
+	    var base64="";
+	    var img = new Image();
+	    img.src="favicon@2x.png";
+	    img.onload=function(){
+	        base64 = image2Base64(img);
+	        var t = document.getElementById('test');
+		    t.setAttribute('src', base64);
+	    }
+	}
+
+	getImgBase64();
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>中文排序【字母归类】</title>
+</head>
+<body>
+    <script>
+    var array = ['北京', '上海', '广州', '深圳', '张家口', '天津', '海南',
+    '天台', '遂宁市', '包头市', '开封市', '资阳市', '玉溪市', '焦作市', '鹤壁市', 
+    '桂林市', '江油市', '秦皇岛市', '亳州市', '合肥', '海口', '张家界', '台州', '台湾', '安庆', '长春市'];
+
+    function chineseSort(arr) {
+        if(!String.prototype.localeCompare) return null;
+
+        const letters = 'ABCDEFGHJKLMNOPQRSTWXYZ'.split('');
+        const zh = '阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀'.split('');
+        arr.sort((c1, c2) => c1.localeCompare(c2, 'zh')); // 先进行一次排序，以减小后面算法的复杂度
+
+        let result = [];
+        // 倒叙循环，提升性能
+        for (let i=letters.length; i--;) {
+            let list = {
+                py: letters[i],
+                data: []
+            };
+            for (let j=arr.length; j--;) {
+                if (arr[j].localeCompare(zh[i], 'zh') >= 0) {
+                    list.data.unshift(arr[j]);
+                } else {
+                    break;
+                }
+            }
+            let len = list.data.length;
+            if (len) {
+                result.unshift(list);
+                arr = arr.slice(0, -len);
+            }
+        }
+        return result;
+    }
+
+    console.log(chineseSort(array));
+    </script>
+</body>
+</html>

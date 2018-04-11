@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>高德地图</title>
+    <style type="text/css">
+        body, html {
+            margin: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        #gmap {
+            width: 80%;
+            height: 80%;
+        }
+        .form-control {
+            margin-top: 20px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gmap"></div>
+    <input type="text" placeholder="经度" name="lng" class="form-control">
+    <input type="text" placeholder="纬度" name="lat" class="form-control">
+    <input type="text" placeholder="地址" name="address" class="form-control" style="min-width: 300px;">
+
+    <script src="https://webapi.amap.com/maps?v=1.4.4&key=b1517265165f1c1f8ddd1c08e3fcaf93&plugin=AMap.Geocoder"></script>
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+    <script>
+    var address = '浙江省杭州市余杭区未来科技城海创园';
+    $('input[name=address]').val(address);
+    new AMap.Geocoder().getLocation(address, function(status, result) {
+        if (status === 'complete' && result.info === 'OK') {
+            if (result.geocodes.length) {
+                var location = result.geocodes[0].location;
+                var lnglatXY = [location.lng, location.lat];
+                init(lnglatXY);
+            } else {
+                console.log('经纬度获取失败');
+            }
+        } else {
+            console.log('经纬度获取失败');
+        }
+    });
+
+    function init (lnglatXY) {
+        var map = new AMap.Map('gmap', {
+            zoom: 10,
+            center: lnglatXY,
+        });
+
+        AMap.plugin(['AMap.Scale'], function () {
+            map.addControl(new AMap.Scale());
+        });
+
+        var marker = new AMap.Marker({
+            position: lnglatXY,
+            draggable: true,
+            title: '这是点标注',
+            cursor: 'move'
+        });
+        marker.setMap(map);
+
+        $('input[name=lng]').val(marker.getPosition().lng);
+        $('input[name=lat]').val(marker.getPosition().lat);
+
+        AMap.event.addListener(marker, "dragging", function(e) {
+            $('input[name=address]').val('检索地址中......');
+            $('input[name=lng]').val(marker.getPosition().lng);
+            $('input[name=lat]').val(marker.getPosition().lat);
+        });
+
+        AMap.event.addListener(marker, "dragend", function(e) {
+            // $('input[name=lng]').val(marker.getPosition().lng);
+            // $('input[name=lat]').val(marker.getPosition().lat);
+            // 逆地理编码
+            lnglatXY = [marker.getPosition().lng, marker.getPosition().lat]; // 地图上所标点的坐标
+            var geocoder = new AMap.Geocoder({
+                radius: 1000,
+                extensions: "all"
+            });
+            geocoder.getAddress(lnglatXY, function(status, result) {
+                if (status === 'complete' && result.info === 'OK') {
+                    var address = result.regeocode.formattedAddress; // 返回地址描述
+                    $('input[name=address]').val(address);
+                }
+            });
+        });
+    }
+    
+</script>
+</body>
+</html>
