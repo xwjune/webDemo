@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        new Promise((resolve, reject) => {
+            reject('hello');
+        })
+        .then((res) => {
+            console.log('resolve-1');
+            return res;
+        }, (rej) => {
+            console.log('reject-1');
+            return Promise.reject(rej); // promise状态为rejected，则then返回的promise状态为rejected
+        })
+        .then((res) => {
+            console.log('resolve-2');
+            console.log(res);
+        }, (rej) => {
+            console.log('reject-2');
+            console.log(rej);
+        })
+        // reject-1 reject-2 hello
+    </script>
+</body>
+</html>

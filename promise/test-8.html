@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        // 如果调用resolve函数和reject函数时带有参数，那么它们的参数会被传递给回调函数。reject函数的参数通常是Error对象的实例，表示抛出的错误；resolve函数的参数除了正常的值以外，还可能是另一个 Promise 实例
+        // const p1 = new Promise(function (resolve, reject) {
+        //     // ...
+        // });
+        // const p2 = new Promise(function (resolve, reject) {
+        //     // ...
+        //     resolve(p1);
+        // })
+        // 上面代码中，p1和p2都是 Promise 的实例，但是p2的resolve方法将p1作为参数，即一个异步操作的结果是返回另一个异步操作。
+        // 注意，这时p1的状态就会传递给p2，也就是说，p1的状态决定了p2的状态。如果p1的状态是pending，那么p2的回调函数就会等待p1的状态改变；如果p1的状态已经是resolved或者rejected，那么p2的回调函数将会立刻执行。
+        
+        function ff() {
+            return new Promise((resolve, reject) => {
+                reject('111');
+            })
+            .catch((error) => {
+                throw error;
+            });
+        }
+        function init() {
+            return new Promise((resolve, reject) => {
+                const p = ff().then((res) => {
+                    return res;
+                })
+                .catch((error) => {
+                    throw error;
+                });
+                resolve(p);
+            });
+        }
+        
+        init().then((res) => {
+            console.log('resolve');
+            console.log(res);
+        }).catch((error) => {
+            console.log('catch');
+            console.log(error);
+        });
+        // catch 111
+    </script>
+</body>
+</html>

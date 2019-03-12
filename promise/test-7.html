@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        new Promise((resolve, reject) => {
+            reject('hello');
+        })
+        .then((res) => {
+            console.log('resolve-1');
+            return res;
+        })
+        .catch((error) => {
+            console.log('catch-1');
+            throw error;
+        })
+        .then((res) => {
+            console.log('resolve-2');
+            console.log(res);
+        })
+        .catch((error) => {
+            console.log('catch-2');
+            console.log(error);
+        });
+        // catch-1 catch-2 hello
+    </script>
+</body>
+</html>

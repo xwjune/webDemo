@@ -8,6 +8,7 @@
 </head>
 <body>
     <script>
+    // 没法区分多音字
     var array = ['北京', '上海', '广州', '深圳', '张家口', '天津', '海南',
     '天台', '遂宁市', '包头市', '开封市', '资阳市', '玉溪市', '焦作市', '鹤壁市', 
     '桂林市', '江油市', '秦皇岛市', '亳州市', '合肥', '海口', '张家界', '台州', '台湾', '安庆', '长春市'];
@@ -21,12 +22,12 @@
 
         let result = [];
         // 倒叙循环，提升性能
-        for (let i=letters.length; i--;) {
+        for (let i = letters.length; i--;) {
             let list = {
                 py: letters[i],
                 data: []
             };
-            for (let j=arr.length; j--;) {
+            for (let j = arr.length; j--;) {
                 if (arr[j].localeCompare(zh[i], 'zh') >= 0) {
                     list.data.unshift(arr[j]);
                 } else {

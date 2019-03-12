@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        // Promise 对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个catch语句捕获。
+        new Promise((resolve, reject) => {
+            reject('hello');
+        })
+        .then((res) => {
+            console.log('resolve-1');
+            return res;
+        }, (rej) => {
+            console.log('reject-1');
+            return rej;
+        })
+        .then((res) => {
+            console.log('resolve-2');
+            console.log(res);
+        })
+        .catch((error) => {
+            console.log('catch');
+            console.log(error);
+        });
+        // reject-1 resolve-2 hello
+
+        new Promise((resolve, reject) => {
+            reject('hello');
+        })
+        .then((res) => {
+            console.log('resolve-1');
+            return res;
+        })
+        .then((res) => {
+            console.log('resolve-2');
+            console.log(res);
+        })
+        .catch((error) => {
+            console.log('catch');
+            console.log(error);
+        });
+        // catch hello
+    </script>
+</body>
+</html>

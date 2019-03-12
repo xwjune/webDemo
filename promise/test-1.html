@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        new Promise((resolve, reject) => {
+            resolve('hello');
+        })
+        .then((res) => {
+            console.log('resolve-1');
+            return res;
+        }, (rej) => {
+            console.log('reject-1');
+            return rej;
+        })
+        .then((res) => {
+            console.log('resolve-2');
+            console.log(res);
+        }, (rej) => {
+            console.log('reject-2');
+            console.log(rej);
+        });
+        // resolve-1 resolve-2 hello
+    </script>
+</body>
+</html>

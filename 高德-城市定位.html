@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>高德地图-城市定位</title>
+</head>
+<body>
+    <p></p>
+
+    <script>
+    const url = 'https://webapi.amap.com/maps?v=1.4.4&key=b1517265165f1c1f8ddd1c08e3fcaf93';
+    const script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('charset', 'utf-8');
+    script.setAttribute('src', url);
+    document.head.appendChild(script);
+    script.onreadystatechange = () => { 
+      if (this.readyState === 'loaded' || this.readyState === 'complete') {
+        callback(); 
+      }
+    }; 
+    script.onload = () => { 
+      callback(); 
+    };
+
+    function callback() {
+      const mapObj = new AMap.Map('iCenter');
+      mapObj.plugin('AMap.Geolocation', () => {
+        const geolocation = new AMap.Geolocation();
+        mapObj.addControl(geolocation);
+        geolocation.getCurrentPosition();
+        AMap.event.addListener(geolocation, 'complete', onComplete); // 返回定位信息
+        AMap.event.addListener(geolocation, 'error', onError); // 返回定位出错信息
+      });
+    }
+
+    function onComplete(data) {
+      if (
+        data.info === 'SUCCESS'
+        && data.addressComponent
+        && data.addressComponent.city
+      ) {
+        document.querySelector('p').innerText = data.addressComponent.city;
+      }
+    }
+
+    function onError(data) {
+      let msg = '';
+      switch (data.info) {
+        case 'NOT_SUPPORTED':
+          msg = '当前浏览器不支持定位功能 ';
+          break;
+        case 'FAILED':
+          msg = data.message;
+          break;
+        default:
+          msg = '定位失败';
+      }
+      document.querySelector('p').innerText = msg;
+    }
+    </script>
+</body>
+</html>

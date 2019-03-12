@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            height: 100vh;
+        }
+        #container {
+            width: 50%;
+            position: relative;
+            background-color: red;
+            overflow: hidden; /*需要触发BFC消除margin折叠的问题*/
+        }
+        .placeholder:after {
+            content: '';
+            display: block;
+            margin-top: 100%; /*margin 百分比相对父元素宽度计算*/
+        } 
+        img {
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container" class="placeholder">
+        <img src="xx" alt="图片" />
+    </div>
+</body>
+</html>
+<!-- https://segmentfault.com/a/1190000004231995 -->
