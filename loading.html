@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>loading</title>
+</head>
+<body>
+  <style>
+    .loading {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      animation: spinRotate 1.2s linear infinite;
+    }
+    .loading-item {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #1890ff;
+      border-radius: 14px;
+      transform: scale(.75);
+      transform-origin: 50% 50%;
+      opacity: .3;
+      animation: spinMove 1s linear infinite alternate;
+    }
+    .loading-item:first-child {
+      top: 0;
+      left: 0;
+    }
+    .loading-item:nth-child(2) {
+      top: 0;
+      right: 0;
+      animation-delay: .4s;
+    }
+    .loading-item:nth-child(3) {
+      right: 0;
+      bottom: 0;
+      animation-delay: .8s;
+    }
+    .loading-item:last-child {
+      left: 0;
+      bottom: 0;
+      animation-delay: 1.2s;
+    }
+    @keyframes spinMove {
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes spinRotate {
+      to {
+        transform: rotate(365deg);
+      }
+    }
+  </style>
+</body>
+  <div class="loading">
+    <div class="loading-item"></div>
+    <div class="loading-item"></div>
+    <div class="loading-item"></div>
+    <div class="loading-item"></div>
+  </div>
+</html>
