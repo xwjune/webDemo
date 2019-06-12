@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+    }
+    .out {
+      width: 500px;
+      height: 200px;
+      margin: 100px 0 0 100px;
+      overflow: hidden;
+    }
+    .line {
+      width: 64px;
+      height: 2px;
+      /* background: linear-gradient(to right,rgba(24,144,255,0) 0,#1890ff); */
+      background: linear-gradient(90deg,rgba(24,144,255,0) 0,#1890ff);
+      animation: move 3s ease-in-out 0s infinite;
+    }
+    @keyframes move {
+      0%, 25% {
+        transform: translateX(-64px);
+      }
+      75%,to {
+        transform: translateX(564px);
+      }
+    }
+  </style>
+</body>
+  <div class="out">
+    <div class="line"></div>
+  </div>
+</html>
