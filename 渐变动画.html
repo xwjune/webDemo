@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <title>渐变动画</title>
 </head>
 <body>
   <style>
@@ -11,7 +12,7 @@
     }
     .out {
       width: 500px;
-      height: 200px;
+      height: 100px;
       margin: 100px 0 0 100px;
       overflow: hidden;
     }
@@ -26,12 +27,32 @@
       0%, 25% {
         transform: translateX(-64px);
       }
-      75%,to {
+      75%, to {
         transform: translateX(564px);
+      }
+    }
+    .infinite {
+      height: 2px;
+      width: 0px;
+      background: red;
+      animation: ani 2s linear infinite;
+    }
+    .alternate {
+      margin-top: 10px;
+      height: 2px;
+      width: 0px;
+      background: blue;
+      animation: ani 2s linear infinite alternate;
+    }
+    @keyframes ani {
+      to {
+        width: 100%;
       }
     }
   </style>
 </body>
+  <div class="infinite"></div>
+  <div class="alternate"></div>
   <div class="out">
     <div class="line"></div>
   </div>
