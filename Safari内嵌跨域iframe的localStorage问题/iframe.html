@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+  <title>iframe</title>
+</head>
+<body>
+  <p id="p1">null</p>
+  <p id="p2">null</p>
+  <script>
+    localStorage.setItem('c', 'iframe');
+    const c = localStorage.getItem('c');
+    document.getElementById('p1').innerText = c;
+    const cache = localStorage.getItem('cache');
+    if (cache) {
+      document.getElementById('p2').innerText = cache;
+    }
+  </script>
+</body>
+</html>

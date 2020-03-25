@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <title>minHeight在flex下和非flex的区别</title>
+  <style type="text/css">
+    html,body {
+      margin: 0;
+      padding: 0;
+    }
+    .flex {
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      height: 250px;
+    }
+    .footer {
+      height: 100px;
+      background: #ccc;
+    }
+    .part {
+      width: 50%;
+      height: 300px;
+      float: left;
+      overflow: auto;
+    }
+    .wrap {
+      min-height: 200px;
+    }
+    .line1 {
+      height: 100px;
+      background: yellow;
+      color: #000;
+    }
+    .line2 {
+      height: 120px;
+      background: blue;
+      color: #fff;
+    }
+    .line3 {
+      height: 130px;
+      background: red;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="part">
+    <div class="wrap">
+      <div class="line1">111</div>
+      <div class="line2">222</div>
+      <div class="line3">333</div>
+    </div>
+    <div class="footer">footer</div>
+  </div>
+  <div class="part flex">
+    <div class="wrap">
+      <div class="line1">111</div>
+      <div class="line2">222</div>
+      <div class="line3">333</div>
+    </div>
+    <div class="footer">footer</div>
+  </div>
+</body>
+</html>
