@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>async错误处理</title>
+</head>
+<body>
+    <script>
+        function f1() {
+            return Promise.resolve('方法1执行');
+        }
+        function f2() {
+            return Promise.reject(new Error('方法2执行错误'));
+        }
+        function f3() {
+            throw new Error('方法3执行错误');
+        }
+        
+        // async function func() {
+        //     const r1 = await f1();
+        //     console.log('f1成功调用');
+        //     const r2 = await f2();
+        //     console.log('f2成功调用');
+        //     const r3 = await f3();
+        //     console.log('f3成功调用');
+        //     return 'hello world';
+        // }
+        // func().then((res) => {
+        //     console.log(res);
+        // }).catch((err) => {
+        //     console.error(err.message);
+        // });
+
+        async function func1() {
+            try {
+                const r1 = await f1();
+                return f2(); // 若此行注释，func1返回结果为resolve
+            } catch (err) {
+                console.error(err.message); // 错误不会进入
+                throw err;
+            }
+        }
+        func1().then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.error(err.message);
+        });
+
+        // func1和func2有区别
+        // func2和func3效果一致
+
+        // async function func2() {
+        //     try {
+        //         const r1 = await f1();
+        //         const r2 = await f2();
+        //         const r3 = await f3();
+        //         return 'hello world';
+        //     } catch (err) {
+        //         console.error(err.message);
+        //         throw err;
+        //     }
+        // }
+        // func1().then((res) => {
+        //     console.log(res);
+        // }).catch(() => {
+        //     console.error('func2错误');
+        // });
+
+        // async function _func3() {
+        //     const r1 = await f1();
+        //     const r2 = await f2();
+        //     const r3 = await f3();
+        //     return 'hello world';
+        // }
+        // function func3() {
+        //     return _func3().catch((err) => {
+        //         console.error(err.message);
+        //         throw err;
+        //     });
+        // }
+        // func3().then((res) => {
+        //     console.log(res);
+        // }).catch(() => {
+        //     console.error('func3错误');
+        // });
+    </script>
+</body>
+</html>

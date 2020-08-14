@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Postman</title>
+  <style>
+    p {
+      margin: 10px 0;
+    }
+    input {
+      width: 100%;
+    }
+    input, select {
+      height: 32px;
+      box-sizing: border-box;
+      border: 1px solid rgb(200, 200, 200);
+    }
+    textarea {
+      min-height: 100px;
+      width: 100%;
+      padding: 4px;
+      border: 1px solid rgb(200, 200, 200);
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    button {
+      width: 100px;
+      height: 32px;
+      padding: 4px 15px;
+      font-size: 14px;
+      border-radius: 2px;
+      color: #fff;
+      background-color: #1890ff;
+      border: 1px solid #1890ff;
+      font-weight: 400;
+      box-sizing: border-box;
+      outline: none;
+      cursor: pointer;
+    }
+    button:hover, button:focus {
+      background-color: #40a9ff;
+      border-color: #40a9ff;
+    }
+    button[disabled] {
+      color: rgba(0,0,0,.25);
+      background: #f5f5f5;
+      border-color: #d9d9d9;
+      cursor: not-allowed;
+    }
+    #result {
+      min-height: 100px;
+      padding: 5px;
+      border: 1px dashed rgb(200, 200, 200);
+    }
+  </style>
+</head>
+<body>
+  <div style="display: flex;">
+    <select id="method" value="post" style="width: 80px">
+      <option value="post">POST</option>
+      <option value="get">GET</option>
+    </select>
+    <input type="text" id="url" style="flex: 1; border-left: 0; margin-right: 5px;" />
+    <button id="submit" onclick="handleSubmit()">Send</button>
+  </div>
+  <div>
+    <p>Body</p>
+    <textarea id="data"></textarea>
+  </div>
+  <div>
+    <span>Times</span>
+    <input
+      type="number"
+      id="time"
+      min="1"
+      value="1"
+      style="width: 80px"
+    />
+  </div>
+  <p>Result</p>
+  <div id="result"></div>
+  <script>
+    const submitDom = document.getElementById('submit');
+    let times = 0;
+    function isNull(value) {
+      if (
+        value === null
+        || value === undefined
+        || (typeof value === 'string' && value.trim() === '')
+      ) {
+        return true;
+      }
+      return false;
+    }
+    function start(time) {
+      times = time;
+      submitDom.disabled = true;
+      document.getElementById('result').innerHTML = '';
+      console.log('---------- Request Start ----------');
+    }
+    function end() {
+      times -= 1;
+      if (times === 0) {
+        submitDom.disabled = false;
+        console.log('---------- Request End ----------');
+      }
+    }
+    function showResult(res) {
+      const textarea = document.createElement('textarea');
+      const text = JSON.stringify(res);
+      textarea.value = text;
+      document.getElementById('result').appendChild(textarea);
+      console.log(text);
+    }
+    function isUrl(url) {
+      const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+      return reg.test(url);
+    }
+    function parseJSON(response) {
+      return response.json();
+    }
+    function handleSubmit() {
+      const url = document.getElementById('url').value;
+      const data = document.getElementById('data').value;
+      const method = document.getElementById('method').value;
+      let time = document.getElementById('time').value;
+      if (isNull(url)) {
+        alert('请填写请求接口');
+        return;
+      }
+      if (!isUrl(url)) {
+        alert('请求接口格式有误');
+        return;
+      }
+      if (isNull(time)) {
+        alert('请填写请求次数');
+        return;
+      }
+      if (time === '0' || !/^\d*$/.test(time)) {
+        alert('请求次数格式有误');
+        return;
+      }
+      const options = {
+        mode: 'cors',
+        catche: 'no-cache',
+        method,
+      };
+      if (method === 'post') {
+        Object.assign(options, {
+          body: data,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+      time = Number(time);
+      start(time);
+      for (let i = 0; i < time; i++) {
+        fetch(url, options)
+        .then(parseJSON)
+        .then((res) => {
+          showResult(res);
+          end();
+        }).catch(() => {
+          end();
+        });
+      }
+    }
+  </script>
+</body>
+</html>

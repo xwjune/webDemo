@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>lazyload</title>
+  <style>
+    html, body{
+      margin: 0;
+      padding: 0;
+    }
+    img {
+      display: block;
+      height: 200px;
+      width: 200px;
+    }
+    .divWrap {
+      position: relative;
+      width: 400px;
+      height: 500px;
+      overflow: auto;
+      background: gray;
+    }
+    .item {
+      height: 300px;
+      width: 200px; 
+    }
+  </style>
+</head>
+<body>
+  <div class="divWrap">
+    <div class="item" style="background-color: yellowgreen;"></div>
+    <div class="item" style="background-color: yellow;"></div>
+    <img alt="" />
+    <div class="item" style="background-color: yellowgreen;"></div>
+    <div class="item" style="background-color: yellow;"></div>
+  </div>
+  <script>
+    const imgSrc = 'data:image/png;base64,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';
+    function debounce(func, wait) {
+      let timeout;
+      return function () {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          func.apply(this, arguments);
+        }, wait);
+      }
+    }
+    function inView(container, img) {
+      const pTop = container.scrollTop;
+      const pTop1 = container.scrollTop + container.clientHeight;
+      const cTop = img.offsetTop;
+      const cTop2 = img.offsetTop + img.clientHeight;
+      if (cTop > pTop1 || cTop2 < pTop) { // 视图外
+        return false;
+      }
+      return true;
+    }
+    function scroll() {
+      const container = document.querySelector('.divWrap');
+      const img = container.querySelector('img');
+      if (inView(container, img)) {
+        img.setAttribute('src', imgSrc);
+      }
+    }
+    const debounceScroll = debounce(scroll, 500);
+    document.querySelector('.divWrap').addEventListener('scroll', () => {
+      debounceScroll();
+    });
+  </script>
+</body>
+</html>
