@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>求n个数组所有组合</title>
+</head>
+<body>
+  <script>
+    const textArr = [
+      ['黑色', '白色'],
+      ['64G', '128G'],
+      ['国行', '港行'],
+      ['全网通'],
+    ];
+
+    const getCombination = (array) => {
+      let resultArr = [];
+      array.forEach((arrItem) => {
+        if (resultArr.length === 0) {
+          let firstItem = [];
+          arrItem.forEach((item) => {
+            firstItem.push([item]);
+          })
+          resultArr = firstItem;
+        } else {
+          const emptyArray = [];
+          resultArr.forEach((item) => {
+            arrItem.forEach((value) => {
+              emptyArray.push([...item, value]);
+            })
+          })
+          resultArr = emptyArray;
+        }
+      });
+      return resultArr;
+    };
+  
+    function combination(arr) {
+      return arr.reduce((total, cur) => {
+        const res = [];
+        total.forEach((_total) => {
+          cur.forEach((_cur) => {
+            res.push([..._total, _cur]);
+          });
+        });
+        return res;
+      }, [[]]);
+    }
+
+    const r = getCombination(textArr);
+  	console.log(r)
+  </script>
+</body>
+</html>

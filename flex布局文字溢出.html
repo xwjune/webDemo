@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>flex布局文字溢出</title>
+  <style>
+    html,body{
+      margin: 0;
+      padding: 0;
+    }
+    .wrap {
+      display: flex;
+      align-items: center;
+      width: 700px;
+      height: 200px;
+      border: 1px solid #ccc;
+    }
+    .left {
+      width: 32px;
+      height: 32px;
+      margin-right: 14px;
+      background-color: red;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    img {
+      width: 144px;
+      height: 140px;
+    }
+    .detail {
+      flex: 1;
+      overflow: hidden;
+    }
+    .name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .test {
+      width: 180px;
+      height: 44px;
+      border: 1px solid red;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="left"></div>
+    <div class="right">
+      <img src="https://lib.jimistore.com/lib/image/goods/%E5%8D%8E%E4%B8%BA%EF%BC%88HUAWEI%EF%BC%89Mate30/icon.webp" />
+      <div class="detail">
+        <div class="name">
+          <span>锄禾日当午，汗滴禾下土，</span>
+          <span>谁知盘中餐，粒粒皆辛苦</span>
+        </div>
+        <div class="name">日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺，疑是银河落九天。</div>
+      </div>
+    </div>
+    <div>
+  </div>
+  <div class="test"></div>
+</body>
+</html>
