@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>async并行</title>
+</head>
+<body>
+  <script>
+    const firstPromise = () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('firstPromise return');
+          resolve('1');
+        }, 3000);
+      });
+    };
+    const secondPromise = () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('secondPromise return');
+          resolve('2');
+        }, 2000);
+      });
+    };
+    const thirdPromise = () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('thirdPromise return');
+          resolve('3');
+        }, 1000);
+      });
+    };
+
+    // 方式一，非并行，效率低，总耗时6s
+    // 输出：
+    // firstPromise return
+    // firstPromise end
+    // secondPromise return
+    // secondPromise end
+    // thirdPromise return
+    // thirdPromise end
+    // result: 1 2 3
+    const async1 = async () => {
+      const r1 = await firstPromise();
+      console.log('firstPromise end');
+      const r2 = await secondPromise();
+      console.log('secondPromise end');
+      const r3 = await thirdPromise();
+      console.log('thirdPromise end');
+      console.log('result:', r1, r2, r3);
+    };
+
+    // 方式二【方式一改进】，并行，效率高，总耗时3s
+    // 输出：
+    // firstPromise return
+    // firstPromise end
+    // thirdPromise return
+    // secondPromise return
+    // secondPromise end
+    // thirdPromise end
+    // result: 1 2 3
+    const async2 = async () => {
+      const first = firstPromise();
+      const second = secondPromise();
+      const third = thirdPromise();
+      const r1 = await first;
+      console.log('firstPromise end');
+      const r2 = await second;
+      console.log('secondPromise end');
+      const r3 = await third;
+      console.log('thirdPromise end');
+      console.log('result:', r1, r2, r3);
+    };
+
+    // 方式三，并行，效率高，总耗时3s
+    // 输出：
+    // firstPromise return
+    // thirdPromise return
+    // secondPromise return
+    // result: 1 2 3
+    const async3 = () => {
+      Promise.all([
+        firstPromise(),
+        secondPromise(),
+        thirdPromise(),
+      ]).then(([r1, r2, r3]) => {
+        console.log('result:', r1, r2, r3);
+      });
+    };
+  </script>
+</body>
+</html>
