@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>getOffset</title>
+  <style>
+    body {
+      border: 2px solid #000;
+      padding: 5px;
+      margin: 5px;
+    }
+    .wrap {
+      width: 100px;
+      height: 100px;
+      padding: 1px;
+      border: 2px solid red;
+    }
+    .out {
+      /* position: absolute; */
+      /* top: 200px;
+      left: 100px; */
+      margin-top: 200px;
+      height: 600px;
+      width: 300px;
+      border: 1px solid red;
+      background: #ccc;
+      overflow: auto;
+    }
+    .item {
+      width: 100px;
+      height: 100px;
+      background: yellow;
+      border: 1px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="out">
+    <div class="wrap">hello</div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+  </div>
+  <script>
+    function getElementOffset(element) {
+      const rect = element.getBoundingClientRect();
+
+      return {
+        top: rect.top + window.pageYOffset,
+        left: rect.left + window.pageXOffset,
+      };
+    }
+    function getOffset(element) {
+      // 元素的offseLeft/offsetTop+offsetParent的offseLeft/offsetTop，以此类推
+      let top = 0;
+      let left = 0;
+      const offsetParent = element.offsetParent;
+
+      if (arguments.length === 1) {
+        top = element.offsetTop;
+        left = element.offsetLeft;
+      } else {
+        top = element.offsetTop + element.clientTop;
+        left = element.offsetLeft + element.clientLeft;
+      }
+      if (offsetParent === null || offsetParent.tagName === 'BODY') {
+        return {
+          top,
+          left,
+        };
+      }
+      return {
+        top: left + getOffset(offsetParent, 'offsetParent').top,
+        left: top + getOffset(offsetParent, 'offsetParent').left,
+      };
+    }
+  </script>
+</body>
+</html>
