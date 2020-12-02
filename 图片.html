@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>图片生成</title>
+</head>
+<body>
+    <script>
+        const src = 'http://baike.baidu.com/cms/rc/240x112dierzhou.jpg';
+        function f1() {
+            document.body.innerHTML = `<img src='${src}' width="200" height="200">`;
+        }
+        function f2() {
+            const img = document.createElement('img');
+            img.src = src;
+            document.body.appendChild(img);
+        }
+        function f3() {
+            const img = new Image(100, 100);
+            img.src = src;
+            document.body.appendChild(img);
+        }
+        f1();
+        f2();
+        f3();
+    </script>
+</body>
+</html>
