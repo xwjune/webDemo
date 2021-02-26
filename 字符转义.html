@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>字符转义</title>
+</head>
+<body>
+  <p id="jsonData"></p>
+  <p id="jsonStr"></p>
+  <script>
+    // 特殊字符串转义
+    const json = {
+      "data": "jsonData\""
+    };
+    document.getElementById('jsonData').innerText = json.data;
+
+    // JSON字符串转义
+    // \ => \\ => \\\\
+    // " => \" => \\\"
+    const jsonStr = {
+      "data": "{\"field\":\"特殊字符\\n\\\\\和\\\"\"}"
+    };
+    console.log('jsonStr.data：', jsonStr.data); // "{"field":"特殊字符\n\\和\""}"
+    const parseJson = JSON.parse(jsonStr.data); // {field: "特殊字符\n\和""}
+    document.getElementById('jsonStr').innerText = parseJson.field;
+
+    ///////
+    const json1 = {
+      field: "特殊字符\n\\和\""
+    };
+    json1Str = JSON.stringify(json1); // "{"field":"特殊字符\n\\和\""}"
+    const newJson = {};
+    newJson.data = JSON.stringify(json1Str); // "data": "{\"field\":\"特殊字符\\n\\\\和\\\"\"}"
+
+  </script>
+</body>
+</html>
