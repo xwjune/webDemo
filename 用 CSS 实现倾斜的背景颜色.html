@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用 CSS 实现倾斜的背景颜色</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+      * {
+          padding: 0rem;
+          margin: 0rem;
+      }
+
+      /* ----------------------------- */
+      .navbar-bg{
+          /* 因为要给导航条添加背景颜色，所以要给导航条添加一个外围的包裹层 */
+          width: 100%;
+          background-color: orangered;
+          /* 固定在页面顶部 */
+          position: fixed;
+          /* 紧贴在顶部 */
+          top: 0rem;
+          /* 层级最高，能够正常显示出来，不会被其他元素覆盖 */
+          z-index: 99999;
+      }
+
+      .navbar{
+          /* 添加内间距，与屏幕两边拉开距离 */
+          padding: 0rem 12rem;
+          list-style: none;
+          /* 弹性布局 */
+          display: flex;
+      }
+
+      .navbar .item{
+          /* 每一个项的宽度为总宽度的 1/6 */
+          flex: 1;
+          padding: 1rem 0rem;
+      }
+
+
+      .navbar .item.sign{
+          /* 这个单独的一项的宽度为总宽度的 5/6 */
+          flex: 5;
+          text-align: right;
+      }
+
+      .navbar .item a{
+          /* 修改导航条里链接的样式 */
+          text-decoration: none;
+          color: white;
+          padding: 1rem 2rem;
+      }
+
+      .navbar .item a:hover{
+          background-color: orange;
+      }
+      /* ============================================ */
+
+      .box-bg{
+          background-color: #0066CC;
+          padding: 3rem 0rem 10rem;
+          /* 在Y轴上逆时针倾斜，这样右边会翘起，左边会垂下 */
+          transform: skew(0deg, -9deg);
+          /* 整体向上移动，把body完全遮住 */
+          margin-top: -1rem;
+      }
+
+      .box{
+          /* 因为外围倾斜会将里面的内容全部倾斜，所以这里把内容部分恢复原状，即反方向倾斜回去 */
+          transform: skew(0deg, 9deg);
+          /* 弹性布局 */
+          display: flex;
+          /* 主要是添加上部的内间距，把倾斜后漏出的body部分遮住 */
+          padding: 6rem 12rem 3rem;
+          background-color: #0066CC;
+      }
+
+      .box .item{
+          padding: 4rem;
+          /* 弹性布局里面的所有单元的宽度都相等，box里面有三个item，那么每一个item就占总宽度的 1/3 */
+          flex: 1;
+          border: solid 1px white;
+      }
+
+      /* ================================= */
+
+      .content{
+          padding: 12rem 0rem;
+          text-align: center;
+          font-size: 4rem;
+          margin: 7rem 0rem 0rem;
+      }
+
+      /* ================================= */
+
+      .footer{
+          /* 在最外围包裹一个div，设定它的高度 */
+          height: 25rem;
+          /* 如果它里面的内容超出了这个高度，则隐藏。这样就保证了这个div里面的内容不会把页面底部顶起来 */
+          overflow-y: hidden;
+          /* 这里要设定一个上内间距，以保证内部倾斜的div的背景颜色能正常显式 */
+          padding: 10rem 0rem 0rem;
+      }
+
+      .footer .footer-bg{
+          /* 这个div是要进行倾斜的 */
+          transform: skew(0deg, -9deg);
+          /* 给它设定一个左右的内间距，让它里面的列表不要顶着页面两侧。还要设定一个下内间距，让它的背景颜色占满整个 footer 的高度。这样做的效果就是只会看到上部倾斜的背景颜色，而下部倾斜的背景颜色因为这个下内间距会占满外围的 footer 的高度，而外围的 footer 因为有 overflow: hidden 会把下部倾斜的背景颜色裁切掉 */
+          padding: 0rem 12rem 30rem;
+          background-color: gray;
+      }
+
+      .footer .footer-bg .list{
+          /* 这是实际的链接列表，让它采用弹性布局 */
+          display: flex;
+          /* 给它一个上外间距，让整个列表朝下移动一定的距离，不要离上部倾斜的背景颜色太近。留白才会有美感 */
+          margin-top: 4rem;
+          /* 这个倾斜与 footer-bg 的倾斜相反，相抵消，从而让这个列表水平 */
+          transform: skew(0deg, 9deg);
+          /* 去掉 ul 里每一个 li 前面默认的黑点 */
+          list-style: none;
+          /* 给一个上内间距，把整个列表朝下移动 */
+          padding-top: 12rem;
+      }
+
+      .footer .footer-bg .list li{
+          /* 让 ul 里面的每一个 li 的宽度一致，这样会均分屏幕宽度 */
+          flex: 1;
+      }
+
+      .footer .footer-bg .list li a{
+          /* 给 li 里面的每一个 a 标签设定一些样式 */
+          color: white;
+          background-color: red;
+          padding:0.5rem 2rem;
+      }
+
+      .footer .footer-bg .list li a:hover{
+          /* 设定鼠标悬浮到 a 标签上时的样式 */
+          background-color: greenyellow;
+          color: black;
+      }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar-bg">
+        <ul class="navbar">
+            <li class="item">
+                <a href="https://www.baidu.com">Home</a>
+            </li>
+            <li class="item">
+                <a href="https://www.baidu.com">Home</a>
+            </li>
+            <li class="item">
+                <a href="https://www.baidu.com">Home</a>
+            </li>
+            <li class="item">
+                <a href="https://www.baidu.com">Home</a>
+            </li>
+            <li class="item sign">
+                <a href="https://www.baidu.com">Sign</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="box-bg">
+        <div class="box">
+            <div class="item">
+                <h1>Title</h1>
+                <p>This is the description for title.</p>
+                <button>click me</button>
+            </div>
+            <div class="item">
+                <h1>Title</h1>
+                <p>This is the description for title.</p>
+                <button>click me</button>
+            </div>
+            <div class="item">
+                <h1>Title</h1>
+                <p>This is the description for title.</p>
+                <button>click me</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>This is content</h1>
+    </div>
+
+    <div class="footer">
+        <div class="footer-bg">
+            <ul class="list">
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+                <li>
+                    <a href="https://greatfrank.cn">Link</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+</html>
