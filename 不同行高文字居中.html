@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>不同行高文字居中</title>
+  <style>
+    .span {
+      background-color: yellow;
+      font-size: 28px;
+      line-height: 40px;
+      margin-bottom: 10px;
+    }
+    .span span:last-child {
+      font-size: 12px;
+      line-height: 20px;
+      background-color: red;
+    }
+    .f1 {
+      display: flex;
+      align-items: center;
+    }
+    .f2 span:last-child  {
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="span">
+    <span>大字-飞流直下三千尺</span>
+    <span>小字</span>
+  </div>
+  <div class="span f1">
+    <span>大字-飞流直下三千尺</span>
+    <span>小字</span>
+  </div>
+  <div class="span f2">
+    <span>大字-飞流直下三千尺</span>
+    <span>小字</span>
+  </div>
+</body>
+</html>
