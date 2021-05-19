@@ -5,21 +5,26 @@
 </head>
 <body>
     <script>
+        function print(str) {
+            const p = document.createElement('p');
+            p.innerText = str;
+            document.body.appendChild(p);
+        }
         new Promise((resolve, reject) => {
             reject('hello');
         })
         .then((res) => {
-            console.log('resolve-1');
+            print('resolve-1');
             return res;
         }, (rej) => {
-            console.log('reject-1'); // promise状态为fulfilled，则then返回的promise状态为fulfilled
+            print('reject-1'); // promise状态为fulfilled，则then返回的promise状态为fulfilled
         })
         .then((res) => {
-            console.log('resolve-2');
-            console.log(res);
+            print('resolve-2');
+            print(res);
         }, (rej) => {
-            console.log('reject-2');
-            console.log(rej);
+            print('reject-2');
+            print(rej);
         });
         // reject-1 resolve-2 undefined
     </script>

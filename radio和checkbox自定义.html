@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>radio和checkbox自定义</title>
+  <style>
+    .my-radio-wrapper {
+      display: inline-block;
+      margin-right: 12px;
+    }
+    .my-radio-wrapper span {
+      vertical-align: middle;
+    }
+    .my-radio-wrapper span + span {
+      margin-left: 6px;
+    }
+    .my-radio-wrapper input {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+    .my-radio {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 16px;
+      background-color: #fff;
+      border: 1px solid #d9d9d9;
+    }
+    .my-radio.checked {
+      border-color: #1890ff;
+    }
+    .my-radio::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: #1890ff;
+      transform: scale(0);
+      transition: all ease-in-out .3s;
+    }
+    .my-radio.checked::after {
+      transform: scale(0.6);
+    }
+
+    .my-checkbox-wrapper {
+      display: inline-block;
+      margin-right: 12px;
+    }
+    .my-checkbox-wrapper span {
+      vertical-align: middle;
+    }
+    .my-checkbox-wrapper span + span {
+      margin-left: 6px;
+    }
+    .my-checkbox-wrapper input {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+    }
+    .my-checkbox {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      background-color: #fff;
+      border: 1px solid #d9d9d9;
+    }
+    .my-checkbox.checked {
+      background-color: #1890ff;
+      border-color: #1890ff;
+    }
+    .my-checkbox::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 22%;
+      width: 4px;
+      height: 8px;
+      border: 2px solid #fff;
+      border-left: 0;
+      border-top: 0;
+      transform: rotate(45deg) scale(0) translate(-50%, -50%);
+      transition: all .2s cubic-bezier(.12,.4,.29,1.46) .1s;
+    }
+    .my-checkbox.checked::after {
+      transform: rotate(45deg) scale(1) translate(-50%, -50%);
+    }
+
+  </style>
+</head>
+<body>
+  <p>单选框</p>
+  <div>
+    <label class="my-radio-wrapper">
+      <span class="my-radio checked">
+        <input type="radio" value="male" name="sex" />
+      </span>
+      <span>男性</span>
+    </label>
+    <label class="my-radio-wrapper">
+      <span class="my-radio">
+        <input type="radio" value="female" name="sex" />
+      </span>
+      <span>女性</span>
+    </label>
+  </div>
+  <p>多选框</p>
+  <div>
+    <label class="my-checkbox-wrapper">
+      <span class="my-checkbox checked">
+        <input type="checkbox" value="swimming" name="hobby" />
+      </span>
+      <span>游泳</span>
+    </label>
+    <label class="my-checkbox-wrapper">
+      <span class="my-checkbox checked">
+        <input type="checkbox" value="movie" name="hobby" />
+      </span>
+      <span>电影</span>
+    </label>
+    <label class="my-checkbox-wrapper">
+      <span class="my-checkbox">
+        <input type="checkbox" value="music" name="hobby" />
+      </span>
+      <span>音乐</span>
+    </label>
+    <label class="my-checkbox-wrapper">
+      <span class="my-checkbox">
+        <input type="checkbox" value="drawing" name="hobby" />
+      </span>
+      <span>画画</span>
+    </label>
+  </div>
+</body>
+</html>

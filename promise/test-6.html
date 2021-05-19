@@ -5,24 +5,29 @@
 </head>
 <body>
     <script>
+        function print(str) {
+            const p = document.createElement('p');
+            p.innerText = str;
+            document.body.appendChild(p);
+        }
         // Promise 对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个catch语句捕获。
         new Promise((resolve, reject) => {
             reject('hello');
         })
         .then((res) => {
-            console.log('resolve-1');
+            print('resolve-1');
             return res;
         }, (rej) => {
-            console.log('reject-1');
+            print('reject-1');
             return rej;
         })
         .then((res) => {
-            console.log('resolve-2');
-            console.log(res);
+            print('resolve-2');
+            print(res);
         })
         .catch((error) => {
-            console.log('catch');
-            console.log(error);
+            print('catch');
+            print(error);
         });
         // reject-1 resolve-2 hello
 
@@ -30,16 +35,16 @@
             reject('hello');
         })
         .then((res) => {
-            console.log('resolve-1');
+            print('resolve-1');
             return res;
         })
         .then((res) => {
-            console.log('resolve-2');
-            console.log(res);
+            print('resolve-2');
+            print(res);
         })
         .catch((error) => {
-            console.log('catch');
-            console.log(error);
+            print('catch');
+            print(error);
         });
         // catch hello
     </script>

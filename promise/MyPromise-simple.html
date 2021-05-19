@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>promise实现</title>
+</head>
+<body>
+  <script>
+    const PENDING = 'pending';
+    const FULFILLED = 'fulfilled';
+    const REJECTED = 'rejected';
+  
+    class MyPromise {
+      constructor(executor) {
+        if (typeof executor !== 'function') {
+          throw new Error('Promise resolver is not a function');
+        }
+
+        this.state = PENDING;
+        this.result = undefined;
+
+        try {
+          executor(this._resolve.bind(this), this._reject.bind(this));
+        } catch (err) {
+          this._reject(err);
+        }
+      }
+
+      _resolve(value) {
+        if (this.state === PENDING) {
+          this.state = FULFILLED;
+          this.result = value;
+        }
+      }
+
+      _reject(err) {
+        if (this.state === PENDING) {
+          this.state = REJECTED;
+          this.result = err;
+        }
+      }
+
+      then(onFuifilled, onRejected) {
+        if (this.state === FULFILLED && onFuifilled) {
+          const r = onFuifilled(this.result);
+          if (r) {
+            this.result = r;
+          }
+        } else if (this.state === REJECTED && onRejected) {
+          const r = onRejected(this.result);
+          if (r) {
+            this.result = r;
+          }
+        }
+        return this;
+      }
+    };
+
+    new Promise((resolve, reject) => {
+      resolve('resolve');
+    }).then((r) => {
+      return r + '-1';
+    }).then((r) => {
+      return r + '-2';
+    }).then((r) => {
+      console.log(r);
+    });
+
+    // new MyPromise((resolve, reject) => {
+    //   reject('reject');
+    // }).then((r) => {
+    //   return r + '-1';
+    // }, (r) => {
+    //   return r + '-01';
+    // }).then((r) => {
+    //   return r + '-2';
+    // }).then((r) => {
+    //   console.log(r);
+    // });
+  </script>
+</body>
+</html>

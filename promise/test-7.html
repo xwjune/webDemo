@@ -5,24 +5,29 @@
 </head>
 <body>
     <script>
+        function print(str) {
+            const p = document.createElement('p');
+            p.innerText = str;
+            document.body.appendChild(p);
+        }
         new Promise((resolve, reject) => {
             reject('hello');
         })
         .then((res) => {
-            console.log('resolve-1');
+            print('resolve-1');
             return res;
         })
         .catch((error) => {
-            console.log('catch-1');
+            print('catch-1');
             throw error;
         })
         .then((res) => {
-            console.log('resolve-2');
-            console.log(res);
+            print('resolve-2');
+            print(res);
         })
         .catch((error) => {
-            console.log('catch-2');
-            console.log(error);
+            print('catch-2');
+            print(error);
         });
         // catch-1 catch-2 hello
     </script>

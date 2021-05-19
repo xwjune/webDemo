@@ -5,22 +5,27 @@
 </head>
 <body>
     <script>
+        function print(str) {
+            const p = document.createElement('p');
+            p.innerText = str;
+            document.body.appendChild(p);
+        }
         new Promise((resolve, reject) => {
             resolve('hello');
         })
         .then((res) => {
-            console.log('resolve-1');
+            print('resolve-1');
             return Promise.reject(res);
-        }, (rej) => {
-            console.log('reject-1');
-            return rej;
+        }, (res) => {
+            print('reject-1');
+            return res;
         })
         .then((res) => {
-            console.log('resolve-2');
-            console.log(res);
-        }, (rej) => {
-            console.log('reject-2');
-            console.log(rej);
+            print('resolve-2');
+            print(res);
+        }, (res) => {
+            print('reject-2');
+            print(res);
         });
         // resolve-1 reject-2 hello
     </script>
