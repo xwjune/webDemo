@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>路径图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 100%; height: 600px; border: 1px solid #eee; position: relative;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/extension/bmap.min.js"></script>
+  <!-- <script src="https://api.map.baidu.com/getscript?v=2.0&ak=KOmVjPVUAey1G2E8zNhPiuQ6QiEmAwZu&services=&t=20200327103013"></script> -->
+  <script src="http://api.map.baidu.com/api?ak=53oVIOgmSIejwV7EfphPgTynOZbIiVYu"></script>
+  <script>
+    const data = [{
+      coords: [
+        [120.163993, 30.266897],
+        [120.152566, 30.258475],
+        [120.144805, 30.258038],
+        [120.139559, 30.246495],
+        [120.148111, 30.234077],
+        [120.160256, 30.237322],
+        [120.162627, 30.246058],
+        [120.164639, 30.246932],
+        [120.169167, 30.256291],
+        [120.164999, 30.262281],
+      ]
+    }, {
+      coords: [
+        [120.091841, 30.285797],
+        [120.054184, 30.281556],
+        [120.050447, 30.254607],
+        [120.097374, 30.26933],
+      ]
+    }];
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      title: {
+        text: '路径图'
+      },
+      bmap: {
+        center: [120.13066322374, 30.240018034923],
+        zoom: 14,
+        roam: true,
+        // 暗色
+        // mapStyle: {
+        //   styleJson: [
+        //     {
+        //       featureType: 'water',
+        //       elementType: 'all',
+        //       stylers: {
+        //         color: '#031628'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'land',
+        //       elementType: 'geometry',
+        //       stylers: {
+        //         color: '#000102'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'highway',
+        //       elementType: 'all',
+        //       stylers: {
+        //         visibility: 'off'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'arterial',
+        //       elementType: 'geometry.fill',
+        //       stylers: {
+        //         color: '#000000'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'arterial',
+        //       elementType: 'geometry.stroke',
+        //       stylers: {
+        //         color: '#0b3d51'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'local',
+        //       elementType: 'geometry',
+        //       stylers: {
+        //         color: '#000000'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'railway',
+        //       elementType: 'geometry.fill',
+        //       stylers: {
+        //         color: '#000000'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'railway',
+        //       elementType: 'geometry.stroke',
+        //       stylers: {
+        //         color: '#08304b'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'subway',
+        //       elementType: 'geometry',
+        //       stylers: {
+        //         lightness: -70
+        //       }
+        //     },
+        //     {
+        //       featureType: 'building',
+        //       elementType: 'geometry.fill',
+        //       stylers: {
+        //         color: '#000000'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'all',
+        //       elementType: 'labels.text.fill',
+        //       stylers: {
+        //         color: '#857f7f'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'all',
+        //       elementType: 'labels.text.stroke',
+        //       stylers: {
+        //         color: '#000000'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'building',
+        //       elementType: 'geometry',
+        //       stylers: {
+        //         color: '#022338'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'green',
+        //       elementType: 'geometry',
+        //       stylers: {
+        //         color: '#062032'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'boundary',
+        //       elementType: 'all',
+        //       stylers: {
+        //         color: '#465b6c'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'manmade',
+        //       elementType: 'all',
+        //       stylers: {
+        //         color: '#022338'
+        //       }
+        //     },
+        //     {
+        //       featureType: 'label',
+        //       elementType: 'all',
+        //       stylers: {
+        //         visibility: 'off'
+        //       }
+        //     }
+        //   ]
+        // },
+        // 灰色
+        mapStyle: {
+          styleJson: [{
+            featureType: 'water',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1'
+            }
+          }, {
+            featureType: 'land',
+            elementType: 'all',
+            stylers: {
+              color: '#f3f3f3'
+            }
+          }, {
+            featureType: 'railway',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'highway',
+            elementType: 'all',
+            stylers: {
+              color: '#fdfdfd'
+            }
+          }, {
+            featureType: 'highway',
+            elementType: 'labels',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'arterial',
+            elementType: 'geometry',
+            stylers: {
+              color: '#fefefe'
+            }
+          }, {
+            featureType: 'arterial',
+            elementType: 'geometry.fill',
+            stylers: {
+              color: '#fefefe'
+            }
+          }, {
+            featureType: 'poi',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'green',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'subway',
+            elementType: 'all',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'manmade',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1'
+            }
+          }, {
+            featureType: 'local',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1'
+            }
+          }, {
+            featureType: 'arterial',
+            elementType: 'labels',
+            stylers: {
+              visibility: 'off'
+            }
+          }, {
+            featureType: 'boundary',
+            elementType: 'all',
+            stylers: {
+              color: '#fefefe'
+            }
+          }, {
+            featureType: 'building',
+            elementType: 'all',
+            stylers: {
+              color: '#d1d1d1'
+            }
+          }, {
+            featureType: 'label',
+            elementType: 'labels.text.fill',
+            stylers: {
+              color: '#999999'
+            }
+          }]
+        }
+      },
+      series: [{
+        type: 'lines',
+        coordinateSystem: 'bmap',
+        polyline: true, // 是否多线段
+        data,
+        lineStyle: {
+          color: 'red',
+          // opacity: 0.5,
+          // width: 1,
+        },
+        effect: {
+          show: true,
+          constantSpeed: 50,
+          color: 'red',
+        },
+      }],
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>

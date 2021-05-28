@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>css动效</title>
+  <style>
+    @keyframes shadow-wave {
+      0% {
+        box-shadow: 0 0 0 0 rgba(254,238,114, 0.7),
+        0 0 0 0 rgba(254,238,114, 0.7);
+      }
+
+      40% {
+        box-shadow: 0 0 0 30px rgba(254,238,114, 0),
+        0 0 0 0 rgba(254,238,114, 0.7);
+      }
+
+      80% {
+        box-shadow: 0 0 0 30px rgba(254,238,114 0),
+        0 0 0 30px rgba(254,238,114, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(254,238,114, 0),
+        0 0 0 30px rgba(254,238,114, 0);
+      }
+    }
+    .ani {
+      position: relative;
+      border-radius: 50px;
+      font-size: 18px;
+      margin: 0 50px;
+      width: 180px;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      display: inline-block;
+      animation: shadow-wave 3s linear infinite;
+      background: #FEEE72;
+      color: #E35566;
+    }
+    .bg {
+      padding: 50px;
+      height: 300px;
+      background: rgba(74,87,104,.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg">
+    <span class="ani">动效</span>
+  </div>
+</body>
+</html>

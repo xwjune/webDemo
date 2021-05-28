@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>关系图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 100%; height: 600px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      title: {
+        text: '关系图'
+      },
+      tooltip: {},
+      series: [{
+        name: '热词',
+        type: 'graph',
+        roam: true,
+        layout: 'force',
+        force: {
+          initLayout: 'circular',
+          repulsion: 60,
+          gravity: 0.01,
+          edgeLength: 300,
+        },
+        symbolSize: 60,
+        itemStyle: {
+          color: '#1890ff',
+        },
+        label: {
+          show: true,
+          color: '#fff',
+          fontSize: 14,
+        },
+        draggable: true,
+        autoCurveness: 20, // 多条边的时候，自动计算曲率
+        edgeLabel: { // 边的设置
+          show: true,
+          position: 'middle',
+          fontSize: 12,
+          formatter: (params) => {
+            return params.data.relation;
+          },
+        },
+        edgeSymbol: ['circle', 'arrow'], // 边两边的类型
+        data: [{
+          name: '韦小宝',
+          id: '1',
+          symbolSize: 100,
+        }, {
+          name: '方怡',
+          id: '2',
+        }, {
+          name: '双儿',
+          id: '3',
+        }, {
+          name: '茅十八',
+          id: '4',
+        }, {
+          name: '吴六奇',
+          id: '5',
+        }],
+        links: [{
+          source: '1',
+          target: '2',
+          relation: '老婆',
+        }, {
+          source: '1',
+          target: '3',
+          relation: '老婆',
+        }, {
+          source: '1',
+          target: '4',
+          relation: '兄弟',
+        }, {
+          source: '4',
+          target: '1',
+          relation: '兄弟',
+        }, {
+          source: '3',
+          target: '5',
+          relation: '义妹',
+        }],
+      }]
+    };
+    myChart.setOption(option);
+    myChart.on('click', { dataType: 'node' }, (params) => {
+      if (params.dataType === 'node') {
+        console.log(params.name, params.value);
+      }
+    });
+  </script>
+</body>
+</html>

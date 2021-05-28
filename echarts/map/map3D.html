@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>地图</title>
+  <style>
+    #myChart {
+      width: 100%;
+      height: 800px;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="myChart"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts-gl/2.0.4/echarts-gl.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('myChart'));
+    const option = {
+      tooltip: {},
+      // visualMap: {
+      //   min: 0,
+      //   text: ['高', '低'],
+      //   inRange: {
+      //     color: ['lightskyblue', 'yellow', 'orangered']
+      //   },
+      // },
+      series: [{
+          name: '采集量',
+          type: 'map3D',
+          map: '',
+          roam: true,
+          scaleLimit: {
+            min: 1,
+            max: 5
+          },
+          label: {
+            normal: {
+              show: true,
+              textStyle: {
+                color: 'rgba(0,0,0,0.7)',
+                fontSize: 10
+              },
+            },
+          },
+          itemStyle: {
+            normal: {
+              borderColor: 'rgba(0, 0, 0, 0.2)',
+            },
+            emphasis: {
+              areaColor: '#f2d5ad',
+            }
+          },
+          data: [{
+            name: '浙江省',
+            itemStyle: { // 单个区域的样式设置
+              color: '#0489d6',
+            },
+            label:{
+              textStyle: {
+                color: '#fff', // 高亮文字颜色
+              }
+            },
+          }],
+        }]
+    };
+    const mapType = 'china';
+    fetch(`./geoJson/${mapType}.json`)
+      .then(res => res.json())
+      .then((res) => {
+        echarts.registerMap(mapType, res);
+        option.series[0].map = mapType;
+        myChart.setOption(option);
+      });
+  </script>
+</body>
+</html>

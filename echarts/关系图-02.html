@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>关系图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 400px; height: 400px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      title: {
+        text: '关系图'
+      },
+      tooltip: {},
+      series: [{
+        name: "热词",
+        type: "graph",
+        // roam: true,
+        // layout: "circular",
+        layout: 'force',
+        zoom: 3,
+        force: {
+          initLayout: 'circular',
+          repulsion: 60,
+          // friction: 0.6, // 节点的移动速度
+        },
+        emphasis: {
+          focus: 'adjacency',
+          lineStyle: {
+            width: 10
+          },
+          label: {
+            show: true,
+            position: 'top',
+          },
+        },
+        label: {
+          show: true,
+          position: 'top',
+        },
+        draggable: true,
+        data: [{
+          id: "0",
+          name: "未成年保护",
+          symbolSize: 50,
+          value: 100,
+          label: {
+            position: 'inside',
+          },
+          emphasis: {
+            label: {
+              position: 'inside',
+            },
+          },
+        }, {
+          id: "1",
+          name: "少年",
+          symbolSize: 20,
+          value: 40,
+        }, {
+          id: "2",
+          name: "猥亵",
+          symbolSize: 15,
+          value: 30,
+        }, {
+          id: "3",
+          name: "家暴",
+          symbolSize: 8,
+          value: 15,
+        }, {
+          id: "4",
+          name: "拐卖",
+          symbolSize: 8,
+          value: 15,
+        }, {
+          id: "5",
+          name: "遗弃",
+          symbolSize: 5,
+          value: 10,
+        }],
+        links: [{
+          id: "0",
+          source: "1",
+          target: "0"
+        }, {
+          id: "1",
+          source: "2",
+          target: "0"
+        }, {
+          id: "2",
+          source: "3",
+          target: "0"
+        }, {
+          id: "3",
+          source: "4",
+          target: "0"
+        }, {
+          id: "4",
+          source: "5",
+          target: "0"
+        }],
+      }]
+    };
+    myChart.setOption(option);
+    myChart.on('click', { dataType: 'node' }, (params) => {
+      // if (params.dataType === 'node') {
+        console.log(params.name, params.value);
+      // }
+    });
+  </script>
+</body>
+</html>
