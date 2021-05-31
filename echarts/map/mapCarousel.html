@@ -68,7 +68,7 @@
     // 省索引
     let provinceIdx = 0;
     // 城市索引
-    let cityIdx = 0;
+    let cityIdx = null;
     // 直辖市，港澳台
     const Municipality = ['110000', '120000', '310000', '500000', '710000', '810000', '910000'];
     // 省直辖
@@ -124,7 +124,6 @@
           cityIdx++;
           cityDraw(province);
         } else if (provinceIdx < address.length - 1) {
-          cityIdx = 0;
           provinceIdx++;
           provinceDraw();
         } else if (timeoutId) {
@@ -147,14 +146,15 @@
     // 省地图渲染
     function provinceDraw() {
       const province = address[provinceIdx];
+      cityIdx = null;
       draw({
         mapType: province.id,
         provinceName: province.name,
         callback() { 
           if (!Municipality.includes(province.id)) {
+            cityIdx = 0;
             cityDraw(province);
           } else if (provinceIdx < address.length - 1) {
-            cityIdx = 0;
             provinceIdx++;
             provinceDraw();
           } else if (timeoutId) {
@@ -174,11 +174,13 @@
       } else {
         document.querySelector('#pause').innerText = '暂停';
         const province = address[provinceIdx];
-        if (!Municipality.includes(province.id) && cityIdx < province.children.length - 1) {
+        if (!Municipality.includes(province.id) && cityIdx === null) {
+          cityIdx = 0;
+          cityDraw(province);
+        } else if (!Municipality.includes(province.id) && cityIdx < province.children.length - 1) {
           cityIdx++;
           cityDraw(province);
         } else if (provinceIdx < address.length - 1) {
-          cityIdx = 0;
           provinceIdx++;
           provinceDraw();
         } else if (timeoutId) {
@@ -196,7 +198,6 @@
         timeoutId = null;
       }
       provinceIdx = 0;
-      cityIdx = 0;
       draw({
         mapType: 'china',
         provinceName: '全国',
