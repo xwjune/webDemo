@@ -9,18 +9,25 @@
       height: 600px;
       border: 1px solid #eee;
     }
+    .title, .subTitle {
+      display: inline;
+    }
+    button {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
-  <div>
-    <h1 style="display: inline"></h1>
-    <h2 style="display: inline"></h2>
+  <div >
+    <h1 class="title"></h1>
+    <h2 class="subTitle"></h2>
   </div>
-  <button type="button" style="margin-bottom: 10px" onclick="reTry()">重新开始</button>
-  <button type="button" style="margin-bottom: 10px" id="stop" onclick="stop()">暂停</button>
+  <button type="button" onclick="restart()">重新开始</button>
+  <button type="button" id="pause" onclick="pause()">暂停</button>
   <div id="myChart"></div>
   <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
   <script>
+    // 图表配置项
     const option = {
       series: [{
         name: '采集量',
@@ -53,18 +60,23 @@
     };
     const myChart = echarts.init(document.getElementById('myChart'));
 
-    const interval = 1000; // 间隔
-    let address = null;
-    let provinceIdx = 0;
-    let cityIdx = 0;
+    // 间隔
+    const interval = 1000;
     let timeoutId = null;
+    // 地址列表
+    let address = null;
+    // 省索引
+    let provinceIdx = 0;
+    // 城市索引
+    let cityIdx = 0;
     // 直辖市，港澳台
     const Municipality = ['110000', '120000', '310000', '500000', '710000', '810000', '910000'];
-    const cities = ['419000']; // 省直辖
+    // 省直辖
+    const cities = ['419000'];
 
     request('./address.json')
       .then((res) => {
-        console.log('城市列表', res);
+        console.log('地址列表', res);
         address = res;
         draw({
           mapType: 'china',
@@ -75,20 +87,22 @@
         });
       });
 
+    // 网络请求
     function request(url) {
       return fetch(url).then(res => res.json());
     }
 
+    // 地图渲染
     function draw({
       mapType,
       provinceName,
       cityName = '',
       callback,
     }) {
-      if (document.querySelector('h1').innerText !== provinceName) {
-        document.querySelector('h1').innerText = provinceName;
+      if (document.querySelector('.title').innerText !== provinceName) {
+        document.querySelector('.title').innerText = provinceName;
       }
-      document.querySelector('h2').innerText = cityName;
+      document.querySelector('.subTitle').innerText = cityName;
       request(`./geoJson/${mapType}.json`)
         .then((geoJson) => {
           echarts.registerMap(mapType, geoJson);
@@ -102,6 +116,7 @@
         });
     }
 
+    // 城市地图渲染
     function cityDraw(province) {
       const city = province.children[cityIdx];
       const callback = () => {
@@ -129,6 +144,7 @@
       }
     }
 
+    // 省地图渲染
     function provinceDraw() {
       const province = address[provinceIdx];
       draw({
@@ -138,6 +154,7 @@
           if (!Municipality.includes(province.id)) {
             cityDraw(province);
           } else if (provinceIdx < address.length - 1) {
+            cityIdx = 0;
             provinceIdx++;
             provinceDraw();
           } else if (timeoutId) {
@@ -148,17 +165,20 @@
       });
     }
 
-    function stop() {
+    // 暂停
+    function pause() {
       if (timeoutId) {
-        document.querySelector('#stop').innerText = '开始';
+        document.querySelector('#pause').innerText = '开始';
         clearTimeout(timeoutId);
         timeoutId = null;
       } else {
-        document.querySelector('#stop').innerText = '暂停';
+        document.querySelector('#pause').innerText = '暂停';
         const province = address[provinceIdx];
-        if (!Municipality.includes(province.id)) {
+        if (!Municipality.includes(province.id) && cityIdx < province.children.length - 1) {
+          cityIdx++;
           cityDraw(province);
         } else if (provinceIdx < address.length - 1) {
+          cityIdx = 0;
           provinceIdx++;
           provinceDraw();
         } else if (timeoutId) {
@@ -168,8 +188,9 @@
       }
     }
 
-    function reTry() {
-      document.querySelector('#stop').innerText = '暂停';
+    // 重新开始
+    function restart() {
+      document.querySelector('#pause').innerText = '暂停';
       if (timeoutId) {
         clearTimeout(timeoutId);
         timeoutId = null;
