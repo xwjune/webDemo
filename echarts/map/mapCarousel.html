@@ -12,20 +12,16 @@
   </style>
 </head>
 <body>
-  <h1 style="display: inline"></h1>
-  <h2 style="display: inline"></h2>
+  <div>
+    <h1 style="display: inline"></h1>
+    <h2 style="display: inline"></h2>
+  </div>
+  <button type="button" style="margin-bottom: 10px" onclick="reTry()">重新开始</button>
+  <button type="button" style="margin-bottom: 10px" id="stop" onclick="stop()">暂停</button>
   <div id="myChart"></div>
   <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
   <script>
     const option = {
-      tooltip: {},
-      // visualMap: {
-      //   min: 0,
-      //   text: ['高', '低'],
-      //   inRange: {
-      //     color: ['lightskyblue', 'yellow', 'orangered']
-      //   },
-      // },
       series: [{
         name: '采集量',
         type: 'map',
@@ -57,17 +53,18 @@
     };
     const myChart = echarts.init(document.getElementById('myChart'));
 
-    const interval = 1000;
+    const interval = 1000; // 间隔
     let address = null;
     let provinceIdx = 0;
     let cityIdx = 0;
-    let intervalId = null;
+    let timeoutId = null;
     // 直辖市，港澳台
     const Municipality = ['110000', '120000', '310000', '500000', '710000', '810000', '910000'];
     const cities = ['419000']; // 省直辖
 
     request('./address.json')
       .then((res) => {
+        console.log('城市列表', res);
         address = res;
         draw({
           mapType: 'china',
@@ -85,18 +82,20 @@
     function draw({
       mapType,
       provinceName,
-      cityName,
+      cityName = '',
       callback,
     }) {
-      document.querySelector('h1').innerText = provinceName;
-      document.querySelector('h2').innerText = cityName || '';
+      if (document.querySelector('h1').innerText !== provinceName) {
+        document.querySelector('h1').innerText = provinceName;
+      }
+      document.querySelector('h2').innerText = cityName;
       request(`./geoJson/${mapType}.json`)
         .then((geoJson) => {
           echarts.registerMap(mapType, geoJson);
           option.series[0].mapType = mapType;
           myChart.setOption(option);
           if (callback) {
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
               callback();
             }, interval);
           }
@@ -113,6 +112,9 @@
           cityIdx = 0;
           provinceIdx++;
           provinceDraw();
+        } else if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
         }
       };
       if (cities.includes(city.id)) {
@@ -138,7 +140,47 @@
           } else if (provinceIdx < address.length - 1) {
             provinceIdx++;
             provinceDraw();
+          } else if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
           }
+        }
+      });
+    }
+
+    function stop() {
+      if (timeoutId) {
+        document.querySelector('#stop').innerText = '开始';
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      } else {
+        document.querySelector('#stop').innerText = '暂停';
+        const province = address[provinceIdx];
+        if (!Municipality.includes(province.id)) {
+          cityDraw(province);
+        } else if (provinceIdx < address.length - 1) {
+          provinceIdx++;
+          provinceDraw();
+        } else if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+      }
+    }
+
+    function reTry() {
+      document.querySelector('#stop').innerText = '暂停';
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      provinceIdx = 0;
+      cityIdx = 0;
+      draw({
+        mapType: 'china',
+        provinceName: '全国',
+        callback() {
+          provinceDraw();
         }
       });
     }
