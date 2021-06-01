@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>折线图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 600px; height: 600px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        formatter(params) {
+          let result = `${params[0].axisValueLabel}</br>`;
+          params.forEach((item) => {
+            if (item.value !== '-' && (item.data && item.data.tooltip !== false)) {
+              result += `${item.marker} ${item.seriesName}：${item.value}</br>`;
+            }
+          });
+          return result;
+        }
+      },
+      grid: {
+        top: '10%',
+        bottom: '10%',
+        left: '10%',
+        right: '10%',
+      },
+      legend: {
+        data: ['Line 1', 'Line 2']
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        data: [820, 932, 901, 934, 1290, {
+          value: 1330,
+          tooltip: false,
+        }, '-'],
+        type: 'line',
+        name: 'Line 1',
+        smooth: true,
+        areaStyle: {}
+      }, {
+        data: ['-', '-', '-', '-', '-', 1330, 1320],
+        type: 'line',
+        name: 'Line 1',
+        smooth: true,
+        areaStyle: {
+          opacity: 0.5,
+        }
+      }, {
+        data: [300, 400, 500, 600, 700, {
+          value: 800,
+          tooltip: false,
+        }, '-'],
+        type: 'line',
+        name: 'Line 2',
+        smooth: true,
+        areaStyle: {}
+      }, {
+        data: ['-', '-', '-', '-', '-', 800, 900],
+        type: 'line',
+        name: 'Line 2',
+        smooth: true,
+        areaStyle: {
+          opacity: 0.5,
+        }
+      }],
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>
