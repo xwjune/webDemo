@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>list2tree</title>
+</head>
+<body>
+  <script>
+    let cnt = 0;
+    // 12891690 次
+    const list2tree1 = (list, parentMenuId) => {
+      return list.filter(item => {
+        cnt++
+        if (item.p === parentMenuId) {
+          item.children = list2tree1(list, item.id);
+          return true;
+        }
+        return false;
+      });
+    }
+
+    // 1334195 次
+    const list2tree2 = (list, parentMenuId) => {
+      return list.filter(item => {
+        cnt++
+        if (item.p !== parentMenuId) {
+          const parent = list.find((parent) => {
+            cnt++
+            if (parent.id === item.p) {
+              return true;
+            }
+            return false;
+          });
+          if (!parent.children) parent.children = [];
+          parent.children.push(item);
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // 163190 次
+    const list2tree3 = (list, parentMenuId) => {
+      let parentObj = {}
+      return list.filter(item => {
+        cnt++
+        if (item.p !== parentMenuId) {
+          if (!parentObj[item.p]) {
+            parentObj[item.p] = list.find((parent) => {
+            cnt++
+            if (parent.id === item.p) {
+              return true;
+            }
+            return false;
+          });
+            parentObj[item.p].children = [];
+          }
+          parentObj[item.p].children.push(item);
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // 7180 次
+    const list2tree4 = (list, parentMenuId) => {
+      const menuObj = {}
+      list.forEach(item => {
+        cnt++
+        item.children = [];
+        menuObj[item.id] = item;
+      });
+      return list.filter(item => {
+        cnt++
+        if (item.p !== parentMenuId) {
+          menuObj[item.p].children.push(item);
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function dataConvert(source = [], options = {}) {
+      const {
+        rootId, // 源数据根节点主键值
+        pId, // 源数据父主键key
+        id = 'id', // 源数据主键key
+        name = 'name', // 源数据名称key
+        tId = 'id', // 树节点主键key
+        tName = 'name', // 树节点名称key
+        children = 'children', // 树节点子集合key
+        raw = false, // 是否保留所有属性
+        otherKeys = [], // 其他需要保留的属性
+      } = options;
+      const dataObj = {}; // 缓存数据
+      const delPid = !raw && !otherKeys.includes(pId); // 是否删除数据父主键key
+
+      // 缓存数据
+      source.forEach((item) => {
+        const obj = {
+          [tId]: item[id],
+          [tName]: item[name],
+          [pId]: item[pId],
+        };
+        if (raw) {
+          Object.assign(obj, { ...item });
+        } else {
+          otherKeys.forEach((key) => {
+            Object.assign(obj, {
+              [key]: item[key],
+            });
+          });
+        }
+        dataObj[item[id]] = obj;
+      });
+
+      return Object.values(dataObj).filter((item) => {
+        if (item[pId] !== rootId) {
+          if (!dataObj[item[pId]][children]) {
+            dataObj[item[pId]][children] = [];
+          }
+          dataObj[item[pId]][children].push(item);
+          if (delPid) {
+            delete item[pId];
+          }
+          return false;
+        }
+        if (delPid) {
+          delete item[pId];
+        }
+        return true;
+      });
+    }
+    
+    fetch('https://product.jimistore.com/area/areagbcodev3.json', {
+      method: 'GET',
+    }).then((response) => {
+      return response.json();
+    }).then(res => {
+      console.log('total:' + res.length); // 3590
+      const r = dataConvert(res, {
+        rootId: '100000',
+        pId: 'p',
+        name: 'v',
+        tId: 'value',
+        tName: 'label',
+        raw: true,
+      });
+      // const r = list2tree4(res, '100000');
+      console.log(r);
+      console.log(cnt);
+    });
+    
+  </script>
+</body>
+</html>

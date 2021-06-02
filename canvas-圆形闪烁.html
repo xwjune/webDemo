@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>canvas-practice</title>
+  <style>
+    html,body{
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('myCanvas');
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d'); // 返回一个用于在画布上绘图的环境
+    ctx.fillStyle = 'rgb(0, 100, 255)'; // 填充颜色
+    ctx.strokeStyle = '#fff'; // 线条颜色
+    ctx.globalAlpha = 1; // 透明度
+    ctx.lineWidth = 2; // 线条宽度
+    let radious = 0; // 圆形半径
+    const draw = () => {
+      ctx.clearRect(0, 0, 200, 200); // 在给定的矩形内清除指定的像素
+      ctx.globalAlpha = (ctx.globalAlpha - 0.01 + 1) % 1; // 透明度0.99=>0.00
+      radious = (radious + 1) % 100; // 半径0=>99
+      ctx.beginPath();
+      ctx.arc(100, 100, radious, 0, 2 * Math.PI); // 圆形绘制
+      ctx.fill(); // 填充当前绘图（路径）
+      ctx.stroke(); // 绘制已定义的路径
+    };
+    setInterval(draw, 20);
+  </script>
+</body>
+</html>
