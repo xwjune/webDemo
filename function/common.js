@@ -9,13 +9,9 @@ function isNumber1(value) {
     ) {
         return false;
     }
-    if (Number.isNaN(Number(value))) {
-        return false;
-    }
-    return true;
+    return !Number.isNaN(Number(value)); // Number() => 0, Number('') => 0
 }
 function convertFenToYuan(value) {
-    const n = Number(value);
     if (
         value === undefined
         || value === null
@@ -23,11 +19,11 @@ function convertFenToYuan(value) {
     ) {
         return '';
     }
-    if (Number.isNaN(n)) {
+    if (Number.isNaN(Number(value))) {
         return '';
     }
-  
-    let str = n.toString();
+    // 转成数字再转成字符串目的：某些字符串需特殊处理，'.2' => 0.2，字符串'-.2' => -0.2
+    let str = Number(value).toString();
     let result = '';
     if (str[0] === '-') {
         result += '-';
