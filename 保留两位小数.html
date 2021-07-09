@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>保留两位小数</title>
+</head>
+<body>
+  <script>
+    // 方法一：四舍五入，返回数值类型
+    // Math.round(num * 100) / 100
+    // 2 => 2、 2.345 => 2.35、 2.342 => 2.34
+
+    // 方法二：向下取整，不四舍五入，返回数值类型
+    // Math.floor(num * 100) / 100
+    // 2 => 2、 2.345 => 2.34、 2.342 => 2.34
+
+    // 方法三：四舍五入，始终有两位小数，返回字符串类型
+    // num.toFixed(2)
+    // 2 => 2.00、 2.345 => 2.35、 2.342 => 2.34
+  </script>
+</body>
+</html>
