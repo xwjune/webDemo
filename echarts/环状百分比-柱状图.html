@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>环状百分比-柱状图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 150px; height: 150px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      title: {
+        left: 'center',
+        top: 'center',
+        text: '80%',
+      },
+      xAxis: {
+        type: 'category',
+        show: false,
+      },
+      yAxis: {
+        type: 'value',
+      },
+      angleAxis: {
+        min: 0,
+        max: 100,
+        show: false,
+        clockwise: false, // 逆时针
+      },
+      radiusAxis: {
+        type: 'category',
+        show: true,
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false
+        },
+      },
+      polar: [{
+        radius: '150%' // 图形大小
+      }],
+      series: [{
+        type: 'bar',
+        barWidth: 10, // 大的占比环
+        roundCap: true,
+        coordinateSystem: 'polar',
+        itemStyle: {
+          // color: '#0170fe',
+          color:  new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            offset: 0,
+            color: '#25BFFF'
+          }, {
+            offset: 1,
+            color: '#5284DE'
+          }]),
+        },
+        data: [80],
+      }]
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>
