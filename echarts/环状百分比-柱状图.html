@@ -15,6 +15,9 @@
         left: 'center',
         top: 'center',
         text: '80%',
+        textStyle: {
+          fontSize: 22,
+        },
       },
       xAxis: {
         type: 'category',
@@ -50,14 +53,17 @@
         barWidth: 10, // 大的占比环
         roundCap: true,
         coordinateSystem: 'polar',
+        // showBackground: true,
         itemStyle: {
           // color: '#0170fe',
           color:  new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
             offset: 0,
-            color: '#25BFFF'
+            // color: '#25BFFF'
+            color: '#BA02F0'
           }, {
             offset: 1,
-            color: '#5284DE'
+            // color: '#5284DE'
+            color: '#01FFF6'
           }]),
         },
         data: [80],

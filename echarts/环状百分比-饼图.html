@@ -14,7 +14,7 @@
       series: [
         {
           type: 'pie',
-          radius: ['60%', '75%'],
+          radius: ['70%', '85%'],
           center: ['50%', '50%'],
           label: {
             show: true,
@@ -36,7 +36,15 @@
           }, {
             value: 80,
             itemStyle: {
-              color: '#0170fe'
+              // color: '#0170fe'
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: '#BA02F0',
+              }, {
+                offset: 1,
+                color: '#01FFF6',
+              }
+            ])
             },
           }],
         }
