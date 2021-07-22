@@ -14,10 +14,11 @@
       title: {
         left: 'center',
         top: 'center',
-        text: '80%',
+        text: '65%',
         textStyle: {
+          color: 'rgba(121, 52, 243, 1)',
           fontSize: 30,
-          color: '#559BF4'
+          fontWeight:'500',
         },
       },
       xAxis: {
@@ -51,32 +52,27 @@
       }],
       series: [{
         type: 'bar',
-        stack: 'radio',
-        barWidth: 10, // 大的占比环
-        roundCap: true,
         coordinateSystem: 'polar',
+        roundCap: true,
+        barWidth: 20,
+        barGap: '-100%',
         itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [{
-            offset: 0,
-            color: '#518FEF'
-          }, {
-            offset: 1,
-            color: '#5CBEFF'
-          }]),
+          color: 'rgba(121, 52, 243, 1)',
         },
-        data: [80],
+        data: [65],
       }, {
         type: 'bar',
-        stack: 'radio',
-        data: [0.01],
         coordinateSystem: 'polar',
         roundCap: true,
         barWidth: 10,
+        barGap: '-70%',
         itemStyle: {
-          color: '#90BDFF',
-          borderColor: 'rgba(81,143,239, 1)',
-          borderWidth: 2
+          color: 'rgba(121, 52, 243, 0.1)',
+          shadowColor: 'rgba(0, 0, 0, 0.2)',
+          shadowBlur: 5,
+          shadowOffsetY: 2
         },
+        data: [100],
       }]
     };
     myChart.setOption(option);

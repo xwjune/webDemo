@@ -11,14 +11,14 @@
   <script>
     const myChart = echarts.init(document.getElementById('chart'));
     const option = {
+      backgroundColor:'RGBA(26, 38, 67, 1)',
       title: {
         left: 'center',
         top: 'center',
-        text: '65%',
+        text: '80%',
         textStyle: {
-          color: 'rgba(121, 52, 243, 1)',
           fontSize: 30,
-          fontWeight:'500',
+          color: '#30ECA6'
         },
       },
       xAxis: {
@@ -52,27 +52,35 @@
       }],
       series: [{
         type: 'bar',
-        coordinateSystem: 'polar',
+        stack: 'radio',
+        barWidth: 10, // 大的占比环
         roundCap: true,
-        barWidth: 20,
-        barGap: '-100%',
+        coordinateSystem: 'polar',
         itemStyle: {
-          color: 'rgba(121, 52, 243, 1)',
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [{
+            offset: 0,
+            color: 'rgba(48, 236, 166, 0.2)'
+          }, {
+            offset: 1,
+            color: 'rgba(48, 236, 166, 1)'
+          }]),
         },
-        data: [65],
+        data: [80],
       }, {
         type: 'bar',
+        stack: 'radio',
+        data: [0.01],
         coordinateSystem: 'polar',
         roundCap: true,
         barWidth: 10,
-        barGap: '-70%',
         itemStyle: {
-          color: 'rgba(121, 52, 243, 0.1)',
-          shadowColor: 'rgba(0, 0, 0, 0.2)',
-          shadowBlur: 5,
-          shadowOffsetY: 2
+          color: 'rgba(48, 236, 166, 0.5)',
+          borderColor: 'rgba(48, 236, 166, 1)',
+          borderWidth: 6,
+          shadowColor: 'rgba(48, 236, 166, 0.5)',
+          shadowBlur: 15,
+          shadowOffsetY: 2,
         },
-        data: [100],
       }]
     };
     myChart.setOption(option);
