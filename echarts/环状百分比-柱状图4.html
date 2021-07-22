@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>环状百分比-柱状图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 300px; height: 300px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      title: {
+        left: 'center',
+        top: 'center',
+        text: '65%',
+        textStyle: {
+          color: 'rgba(121, 52, 243, 1)',
+          fontSize: 30,
+          fontWeight:'500',
+        },
+      },
+      xAxis: {
+        type: 'category',
+        show: false,
+      },
+      yAxis: {
+        type: 'value',
+      },
+      angleAxis: {
+        min: 0,
+        max: 100,
+        show: false,
+        clockwise: false, // 逆时针
+      },
+      radiusAxis: {
+        type: 'category',
+        show: true,
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false
+        },
+      },
+      polar: [{
+        radius: '150%' // 图形大小
+      }],
+      series: [{
+        type: 'bar',
+        coordinateSystem: 'polar',
+        roundCap: true,
+        barWidth: 20,
+        barGap: '-100%',
+        itemStyle: {
+          color: 'rgba(121, 52, 243, 1)',
+        },
+        data: [65],
+      }, {
+        type: 'bar',
+        coordinateSystem: 'polar',
+        roundCap: true,
+        barWidth: 10,
+        barGap: '-70%',
+        itemStyle: {
+          color: 'rgba(121, 52, 243, 0.1)',
+          shadowColor: 'rgba(0, 0, 0, 0.2)',
+          shadowBlur: 5,
+          shadowOffsetY: 2
+        },
+        data: [100],
+      }]
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>
