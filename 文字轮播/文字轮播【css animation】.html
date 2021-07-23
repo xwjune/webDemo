@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>文字轮播【css animation】</title>
+  <style>
+    .wrap {
+      width: 200px;
+      height: 100px;
+      border: 1px solid silver;
+      background: #f7f7f7;
+      color: #938C43;
+      overflow: hidden;
+    }
+    .list {
+      animation: anis 10s linear infinite;
+    }
+    .list:hover {
+      animation-play-state: paused;
+    }
+    .list div {
+      font-size: 15px;
+      line-height: 20px;
+      text-align: center;
+    }
+    @keyframes anis {
+      100% {
+        transform: translateY(-100%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="list"></div>
+  </div>
+  <script>
+    // 使用css动画
+    // animation: anis 10s linear infinite，表示10秒内轮播完，如果文字数量多，这个时间需要调整
+    function initDom() {
+      const len = 13;
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < len; i++) {
+        const div = document.createElement('div');
+        div.innerText = `文字${i + 1}`;
+        fragment.appendChild(div);
+      }
+      document.querySelector('.list').appendChild(fragment);
+    }
+    initDom();
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+  <title>轮播</title>
+  <style>
+    h2 {
+      text-align: center;
+    }
+    .list {
+      margin: 0 auto;
+      height: 20px;
+      width: 300px;
+      border: 1px solid silver;
+      background: #f7f7f7;
+      color: #938C43;
+      overflow: hidden;
+    }
+    .list div {
+      font-size: 12px;
+      line-height: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>滚动新闻</h2>
+  <div class="list" onmouseover="mouseover()" onmouseout="mouseout()">
+    <div></div>
+    <div></div>
+  </div>
+  <script>
+    const delay = 2000;
+    const height = 20;
+    const marquee = ['111111', '222222', '333333', '444444', 'aaaaaa'];
+    const intervalId = [undefined, undefined];
+    let marqueeIdx = 0;
+    const parentDom = document.querySelector('.list');
+    const preDom = parentDom.querySelector('div:first-child');
+    const nextDom = parentDom.querySelector('div:last-child');
+     
+    function initMarquee() {
+      preDom.innerText = marquee[0];
+      marqueeIdx++;
+      // 文字交替
+      intervalId[0] = setInterval(() => {
+        startMarquee();
+      }, delay);
+    }
+    function startMarquee() {
+      if (nextDom.innerText === '') {
+        nextDom.innerText = marquee[marqueeIdx];
+      } else {
+        preDom.innerText = marquee[marqueeIdx];
+        marqueeIdx++;
+        if (marqueeIdx > marquee.length - 1) {
+          marqueeIdx = 0;
+        }
+        nextDom.innerText = marquee[marqueeIdx];
+        parentDom.scrollTop = 0;
+      }
+      clearInterval(intervalId[1]); 
+      intervalId[1] = setInterval(() => {
+        scrollMarquee();
+      }, 20);
+    }
+    // 文字滚动
+    function scrollMarquee() {
+      parentDom.scrollTop++;
+      if (parentDom.scrollTop % height === height - 1) {
+        clearInterval(intervalId[1]);
+      }
+    }
+    function mouseover() {
+      clearInterval(intervalId[0]);
+    }
+    function mouseout() {
+      intervalId[0] = setInterval(() => {
+        startMarquee();
+      }, delay);
+    }
+    initMarquee();
+  </script>
+</body>
+</html>

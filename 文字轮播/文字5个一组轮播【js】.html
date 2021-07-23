@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+  <title>文字5个一组轮播【js】</title>
+  <style>
+    .wrap {
+      position: relative;
+      width: 200px;
+      height: 100px;
+      border: 1px solid silver;
+      background: #f7f7f7;
+      color: #938C43;
+      overflow: hidden;
+    }
+    .list {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    .list div {
+      font-size: 12px;
+      line-height: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='list'></div>
+  </div>
+  <script>
+    // 使用js，几个一组轮播，但最后一组轮播完后，会有往回滚的动效，可能影响效果
+    const len = 13;
+    const delay = 1000;
+    const step = 5;
+
+    initDom();
+    marquee();
+
+    function initDom() {
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < len; i++) {
+        const div = document.createElement('div');
+        div.innerText = `文字${i + 1}`;
+        fragment.appendChild(div);
+      }
+      document.querySelector('.list').appendChild(fragment);
+    }
+    function marquee() {
+      const end = Math.floor(len / step);
+      let idx = 1;
+      setInterval(() => {
+        document.querySelector('.list').style.top = `-${idx * 100}px`;
+        idx++;
+        if (idx > end) {
+          idx = 0;
+        }
+      }, delay);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>文字轮播【marquee】</title>
+  <style>
+    marquee {
+      font-size: 14px;
+      line-height: 25px;
+      border: 1px solid silver;
+      background: #f7f7f7;
+      color: #938C43;
+    }
+    marquee.vertical {
+      width: 50px;
+      height: 300px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- <marquee> 元素已经 过时，请不要再使用。尽管一些浏览器仍然支持它，但它不是必须的。此外，使用这个元素基本上是你可以对你的用户做最糟糕的事情之一，所以请不要这样做。 -->
+  <marquee direction="left">left</marquee>
+  <marquee direction="right">right</marquee>
+  <!-- behavior 滚动方式属性 -->
+  <marquee behavior="alternate">回交替滚动</marquee>
+  <!-- scrolldelay 设置文字滚动的时间间隔 -->
+  <marquee scrolldelay="5">速度5毫秒</marquee>
+  <marquee direction="up" class="vertical">UP</marquee>
+  <marquee direction="down" class="vertical">DOWN</marquee>
+</body>
+</html>

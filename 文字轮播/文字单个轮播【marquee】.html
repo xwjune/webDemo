@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>文字单个轮播【marquee】</title>
+  <style>
+    marquee {
+      width: 200px;
+      height: 20px;
+      border: 1px solid silver;
+      background: #f7f7f7;
+      color: #938C43;
+    }
+    marquee div {
+      font-size: 12px;
+      line-height: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <marquee direction="up" scrolldelay="1000" scrollamount="20"></marquee>
+  <script>
+    // <marquee> 元素已经 过时，请不要再使用。尽管一些浏览器仍然支持它，但它不是必须的。此外，使用这个元素基本上是你可以对你的用户做最糟糕的事情之一，所以请不要这样做。
+    const len = 5;
+    function initDom() {
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < len; i++) {
+        const div = document.createElement('div');
+        div.innerText = `文字${i + 1}`;
+        fragment.appendChild(div);
+      }
+      document.querySelector('marquee').appendChild(fragment);
+    }
+    initDom();
+  </script>
+</body>
+</html>
