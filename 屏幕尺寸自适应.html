@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>屏幕画布初始化</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      background-color: rgb(0, 0, 0);
+    }
+    .page {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 3240px;
+      height: 1080px;
+      transform-origin: left top;
+      background: rgb(16, 30, 66);
+      color: #fff;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="page"></div>
+  <script>
+    /**
+     * 获取窗口可视区的高度
+     *
+     * @returns {Number}
+     */
+    function getWinHeight() {
+      return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    }
+    /**
+     * 获取窗口可视区的宽度
+     *
+     * @returns {Number}
+     */
+    function getWinWidth() {
+      return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    }
+    /**
+     * 屏幕画布初始化【适配设计稿】
+     * 
+     * @param {Number} w - 原始尺寸宽
+     * @param {Number} h - 原始尺寸高
+     */
+    function init(w, h) {
+      const width = getWinWidth(); // 屏幕尺寸宽
+      const height = getWinHeight(); // 屏幕尺寸高
+      const scaleX = width / w; // 横向比例
+      const scaleY = height / h; // 纵向比例
+      const scale =  scaleX < scaleY ? scaleX : scaleY;  // 最终比例
+      let top = 0;
+      let left = 0;
+      if (scaleX > scaleY) {
+        left = (width - w * scale) / 2;
+      } else {
+        top = (height - h * scale) / 2;
+      }
+      const dom = document.querySelector('.page');
+      dom.style.transform = `scale(${scale})`;
+      dom.style.top = `${top}px`;
+      dom.style.left = `${left}px`;
+    }
+    init(3240, 1080);
+
+    /**
+    // 屏幕尺寸 1920 * 946 
+    //                   最终比例    横向比例      纵向比例     top       left
+    // 全部小于屏幕
+    init(1024, 900); //  1.05111    1.875       1.05111     0         421.831
+    // 全部小于屏幕
+    init(1900, 700); //  1.01053    1.01053     1.35142     119.316   0
+    // 宽大于屏幕
+    init(1920, 1080); // 0.875926   1           0.875926    0         119.111
+    // 高大于屏幕
+    init(2000, 946); //  0.96       0.96        1           18.92     0
+    // 高小于屏幕
+    init(1920, 800); //  1          1           1.1825      73        0
+    // 宽小于屏幕
+    init(1700, 946); //  1          1.1294      1           0         110
+    // 全部大于屏幕
+    init(3240, 1080); // 0.592593   0.592593    0.8759259   153       0
+    **/
+  </script>
+</body>
+</html>
