@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>图片自适应</title>
+  <style>
+    body > div + div {
+      margin-top: 50px;
+    }
+    .img-wrap,
+    .img-wrap-3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 200px;
+      height: 200px;
+      background-color: #f0f0f0;
+    }
+    .img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .img-wrap-2 {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background-color: #f0f0f0;
+    }
+    .img-wrap-2 img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      transform-origin: left top;
+    }
+  </style>
+</head>
+<body>
+  <div class="img-wrap">
+    <img src="https://jmproduct.oss-cn-hangzhou.aliyuncs.com/default/%E7%AB%96%E5%9B%BE-9f561d2678fa4aacbff178c7846d8721.jpeg" />
+  </div>
+  <div class="img-wrap-2">
+    <img src="https://jmproduct.oss-cn-hangzhou.aliyuncs.com/default/横图-97aae7792a414347a822e421a66c6a92.jpeg" onLoad="onImgLoad()" />
+  </div>
+  <div class="img-wrap-3">
+    <img src="https://jmproduct.oss-cn-hangzhou.aliyuncs.com/default/%E7%AB%96%E5%9B%BE-9f561d2678fa4aacbff178c7846d8721.jpeg" onLoad="onImgLoad2()" />
+  </div>
+  <script>
+    function onImgLoad() {
+      const img = window.event.target || window.event.srcElement;
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      imgResponsive({
+        w,
+        h,
+        width: 200,
+        height: 200,
+        dom: img,
+      });
+    }
+    /**
+     * @param {Number} w - 原始尺寸宽
+     * @param {Number} h - 原始尺寸高
+     * @param {Number} width - 容器尺寸宽
+     * @param {Number} height - 容器尺寸高
+     */
+    function imgResponsive({w, h, width, height, dom}) {
+      const scaleX = width / w; // 横向比例
+      const scaleY = height / h; // 纵向比例
+      const scale =  scaleX < scaleY ? scaleX : scaleY;  // 最终比例
+      let top = 0;
+      let left = 0;
+      if (scaleX > scaleY) {
+        left = (width - w * scale) / 2;
+      } else {
+        top = (height - h * scale) / 2;
+      }
+      dom.style.width = `${w}px`;
+      dom.style.height = `${h}px`;
+      dom.style.top = `${top}px`;
+      dom.style.left = `${left}px`;
+      dom.style.transform = `scale(${scale})`;
+    }
+
+    function onImgLoad2() {
+      const img = window.event.target || window.event.srcElement;
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      imgResponsive2({
+        w,
+        h,
+        w2: 200,
+        h2: 200,
+        dom: img,
+      });
+    }
+    /**
+     * @param {Number} w - 原始尺寸宽
+     * @param {Number} h - 原始尺寸高
+     * @param {Number} w2 - 容器尺寸宽
+     * @param {Number} h2 - 容器尺寸高
+     */
+    function imgResponsive2({w, h, w2, h2, dom}) {
+      const scaleX = w / w2; // 横向比例
+      const scaleY = h / h2; // 纵向比例
+      if (scaleX > 1 || scaleY > 1) {
+        // 原尺寸大于容器，需要缩小
+        const scale =  scaleX > scaleY ? scaleX : scaleY;  // 最终比例
+        const width = w / scale;
+        dom.style.width = `${width / w2 * 100}%`;
+      } else {
+        dom.style.width = '100%';
+      }
+    }
+  </script>
+</body>
+</html>
