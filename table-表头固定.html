@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>table表头固定</title>
+  <style>
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    table th,
+    table td {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .table {
+      width: 450px;
+      border: 1px solid #f0f0f0;
+      border-right: 0;
+      border-bottom: 0;
+    }
+    .table-header {
+      overflow: hidden;
+    }
+    .table-body {
+      overflow: auto scroll;
+      max-height: 100px;
+    }
+    .table-header > table > thead > tr > th,
+    .table-body > table > tbody > tr > td {
+      padding: 2px;
+      border-right: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .table-header > table > thead > tr > th {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div class="table">
+    <div class="table-header">
+      <table>
+        <colgroup>
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>列一</th>
+            <th>列二</th>
+            <th>列三</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div class="table-body">
+      <table>
+        <colgroup>
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+        </colgroup>
+        <tbody>
+          <tr>
+            <td>11</td>
+            <td>22</td>
+            <td>33</td>
+          </tr>
+          <tr>
+            <td>111</td>
+            <td>222</td>
+            <td>333</td>
+          </tr>
+          <tr>
+            <td>1111</td>
+            <td>2222</td>
+            <td>3333</td>
+          </tr>
+          <tr>
+            <td>11111</td>
+            <td>22222</td>
+            <td>33333</td>
+          </tr>
+          <tr>
+            <td>111111</td>
+            <td>222222</td>
+            <td>333333</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    
+  </script>
+</body>
+</html>

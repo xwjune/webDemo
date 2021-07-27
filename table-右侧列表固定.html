@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>table右侧列表固定</title>
+  <style>
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    table th,
+    table td {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .table {
+      width: 450px;
+      border: 1px solid #f0f0f0;
+      border-right: 0;
+      border-bottom: 0;
+    }
+    .table table {
+      table-layout: fixed;
+    }
+    .table-header {
+      overflow: hidden;
+    }
+    .table-body {
+      overflow: auto scroll;
+      max-height: 100px;
+    }
+    .table-header > table > thead > tr > th,
+    .table-body > table > tbody > tr > td {
+      padding: 4px;
+      border-right: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .table-header > table > thead > tr > th {
+      text-align: left;
+      background: #fafafa;
+    }
+    .table-header > table > thead > tr > th:last-child,
+    .table-body > table > tbody > tr > td:last-child {
+      position: sticky;
+      z-index: 2;
+      right: 0;
+      background: #fff;
+    }
+    .table-header > table > thead > tr > th:last-child::after,
+    .table-body > table > tbody > tr > td:last-child::after {
+      position: absolute;
+      top: 0;
+      bottom: -1px;
+      left: 0;
+      width: 30px;
+      transform: translateX(-100%);
+      transition: box-shadow .3s;
+      content: "";
+      pointer-events: none;
+      box-shadow: inset -10px 0 8px -8px rgb(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="table">
+    <div class="table-header">
+      <table>
+        <colgroup>
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 100px;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>列一</th>
+            <th>列二</th>
+            <th>列三</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div class="table-body">
+      <table>
+        <colgroup>
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 150px;">
+          <col style="width: 150px; min-width: 100px;">
+        </colgroup>
+        <tbody>
+          <tr>
+            <td>11</td>
+            <td>22</td>
+            <td>33</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>111</td>
+            <td>222</td>
+            <td>333</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>1111</td>
+            <td>2222</td>
+            <td>3333</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>11111</td>
+            <td>22222</td>
+            <td>33333</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>111111</td>
+            <td>222222</td>
+            <td>333333</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>111111</td>
+            <td>222222</td>
+            <td>333333</td>
+            <td>编辑</td>
+          </tr>
+          <tr>
+            <td>1111111</td>
+            <td>2222222</td>
+            <td>3333333</td>
+            <td>编辑</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const header = document.querySelector('.table-header');
+    const body = document.querySelector('.table-body');
+    body.addEventListener('scroll', () => {
+      header.scrollLeft = body.scrollLeft;
+    });
+  </script>
+</body>
+</html>
