@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>地图</title>
+  <style>
+    #myChart {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="myChart"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('myChart'));
+    const mapType = 'hangzhou';
+    const mapData = [{
+      name: '江干区',
+      value: [120.185, 30.274, 299]
+    }, {
+      name: '拱墅区',
+      value: [120.182, 30.351, 299]
+    }, {
+      name: '西湖区',
+      value: [120.091, 30.27, 299]
+    }, {
+      name: '滨江区',
+      value: [120.21, 30.209, 299]
+    }, {
+      name: '萧山区',
+      value: [120.254, 30.159, 299]
+    }, {
+      name: '余杭区',
+      value: [120.295, 30.427, 299]
+    }, {
+      name: '富阳区',
+      value: [119.956, 30.05, 299]
+    }, {
+      name: '桐庐县',
+      value: [119.675, 29.784, 299]
+    }, {
+      name: '淳安县',
+      value: [119.058, 29.613, 299]
+    }, {
+      name: '建德市',
+      value: [119.28, 29.464, 299]
+    }, {
+      name: '临安区',
+      value: [119.712, 30.227, 299]
+    }, {
+      name: '钱塘新区',
+      value: [120.485, 30.284, 299]
+    }];
+    const option = {
+      backgroundColor: 'rgb(8, 16, 59)',
+      geo: {
+        map: mapType,
+        roam: false,
+        itemStyle: {
+          normal: {
+            shadowColor: '#182f68',
+            shadowOffsetX: 1,
+            shadowOffsetY: 15
+          },
+        }
+      },
+      series: [{
+        name: '采集量',
+        type: 'map',
+        mapType,
+        roam: false,
+        label: {
+          normal: {
+            show: false,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        itemStyle: {
+          normal: {
+            areaColor: 'rgb(15,40,120)',
+            shadowColor: 'rgba(0, 255, 255, 0.7)',
+            shadowBlur: 5,
+            shadowOffsetX: 0,
+            shadowOffsetY: 1,
+            borderColor: '#2ab8ff',
+            borderWidth: 1,
+          },
+          emphasis: {
+            areaColor: '#2AB8FF',
+          }
+        },
+        data: [],
+      }, {
+        type: 'scatter',
+        coordinateSystem: 'geo',
+        itemStyle: {
+          color: '#f00',
+        },
+        symbol: 'image://assets/location.png',
+        symbolSize: [35, 46],
+        symbolOffset: [0, -20],
+        z: 999,
+        data: mapData,
+      }, {
+        type: 'scatter',
+        coordinateSystem: 'geo',
+        label: {
+          normal: {
+            show: true,
+            formatter: function (params) {
+              const name = params.name;
+              const value = params.value[2];
+              const text = `{fline|${value}}\n{tline|${name}}`;
+              return text;
+            },
+            color: '#fff',
+            rich: {
+              fline: {
+                color: '#ABF8FF',
+                fontSize: 12,
+                lineHeight: 16,
+              },
+              tline: {
+                color: '#fff',
+                textShadowColor: '#030615',
+                fontSize: 14,
+                fontWeight: 400,
+                lineHeight: 20
+              },
+            },
+          },
+          emphasis: {
+            show: true,
+          },
+        },
+        itemStyle: {
+          color: '#00FFF6',
+        },
+        symbol: 'image://assets/bg.png',
+        symbolSize: [100, 50],
+        symbolOffset: [0, -70],
+        data: mapData,
+    },{
+        type: 'effectScatter',
+        coordinateSystem: 'geo',
+        showEffectOn: 'render',
+        rippleEffect: {
+          brushType: 'stroke'
+        },
+        symbolSize: 15,
+        hoverAnimation: true,
+        itemStyle: {
+          color: 'rgb(53,146,212)',
+        },
+        data: mapData,
+      }]
+    };
+    fetch(`./geoJson/330100.json`)
+      .then(res => res.json())
+      .then((res) => {
+        echarts.registerMap(mapType, res);
+        option.series[0].mapType = mapType;
+        myChart.setOption(option);
+      });
+  </script>
+</body>
+</html>
