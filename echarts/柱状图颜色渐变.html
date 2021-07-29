@@ -3,7 +3,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>柱状图颜色渐变</title>
-  <style></style>
 </head>
 <body>
   <div id="chart" style="width: 600px; height: 300px; border: 1px solid #eee;"></div>
@@ -11,9 +10,7 @@
   <script>
     const myChart = echarts.init(document.getElementById('chart'));
     const option = {
-      tooltip: {
-        show: true,
-      },
+      tooltip: {},
       grid: {
         top: '10%',
         bottom: '10%',
@@ -40,8 +37,7 @@
           }, {
             offset: 1,
             color: 'rgba(255, 0, 0, 0)'
-            }
-          ])
+          }])
         }
       }]
     };

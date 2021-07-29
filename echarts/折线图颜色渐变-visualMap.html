@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang='zh-CN'>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>折线图颜色渐变</title>
-  <style></style>
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+  <title>折线图颜色渐变-visualMap</title>
 </head>
 <body>
-  <div id="chart" style="width: 600px; height: 300px; border: 1px solid #eee;"></div>
-  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <div id='chart' style='width: 600px; height: 300px; border: 1px solid #eee;'></div>
+  <script src='https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js'></script>
   <script>
     const myChart = echarts.init(document.getElementById('chart'));
     const option = {
@@ -25,19 +24,18 @@
       yAxis: {
         type: 'value'
       },
+      visualMap: {
+        show: false,
+        min: 0,
+        max: 400,
+        inRange: {
+          color: ['rgba(255, 0, 0, 0)', 'rgba(255, 0, 0, 1)']
+        },
+      },
       series: [{
         type: 'line',
         smooth: true,
         symbol: 'none',
-        lineStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-            offset: 0,
-            color: 'rgba(255, 0, 0, 1)'
-          }, {
-            offset: 1,
-            color: 'rgba(255, 0, 0, 0)'
-          }])
-        },
         data: [116, 129, 135, 86, 73, 85, 73, 68, 92, 130, 245, 139, 115, 111, 309, 206, 137, 128, 85, 94, 71, 106, 84, 93, 85, 73, 83, 125, 107, 82, 44, 72, 106, 107, 66, 91, 92, 113, 107, 131, 111, 64, 69, 88, 77, 83, 111, 57, 55, 60],
       }]
     };
