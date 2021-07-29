@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>折线图</title>
+  <title>柱状图颜色渐变</title>
   <style></style>
 </head>
 <body>
@@ -29,19 +29,25 @@
       },
       series: [{
         data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-        smooth: true,
-        markPoint: {
-          data: [
-            { type: 'max', name: '最大值' },
-            { type: 'min', name: '最小值' }
-          ]
-        },
-        markLine: {
-          data: [
-            { type: 'average', name: '平均值' }
-          ]
-        },
+        type: 'bar',
+        barWidth: 12,
+        itemStyle: {
+          borderRadius: [8, 8, 0, 0],
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: 'rgba(255, 0, 0, 1)'
+            }, {
+            offset: 1,
+            color: 'rgba(255, 0, 0, 0)'
+            }]
+          }
+        }
       }]
     };
     myChart.setOption(option);

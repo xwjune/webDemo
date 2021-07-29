@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>折线图颜色渐变</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 600px; height: 300px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      grid: {
+        top: '10%',
+        bottom: '10%',
+        left: '10%',
+        right: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: ['2020-06-05','2020-06-06','2020-06-07','2020-06-08','2020-06-09','2020-06-10','2020-06-11','2020-06-12','2020-06-13','2020-06-14','2020-06-15','2020-06-16','2020-06-17','2020-06-18','2020-06-19','2020-06-20','2020-06-21','2020-06-22','2020-06-23','2020-06-24','2020-06-25','2020-06-26','2020-06-27','2020-06-28','2020-06-29','2020-06-30','2020-07-01','2020-07-02','2020-07-03','2020-07-04','2020-07-05','2020-07-06','2020-07-07','2020-07-08','2020-07-09','2020-07-10','2020-07-11','2020-07-12','2020-07-13','2020-07-14','2020-07-15','2020-07-16','2020-07-17','2020-07-18','2020-07-19','2020-07-20','2020-07-21','2020-07-22','2020-07-23','2020-07-24']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+        lineStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            offset: 0,
+            color: 'rgba(255, 0, 0, 1)'
+          }, {
+            offset: 1,
+            color: 'rgba(255, 0, 0, 0)'
+          }])
+        },
+        data: [116, 129, 135, 86, 73, 85, 73, 68, 92, 130, 245, 139, 115, 111, 309, 206, 137, 128, 85, 94, 71, 106, 84, 93, 85, 73, 83, 125, 107, 82, 44, 72, 106, 107, 66, 91, 92, 113, 107, 131, 111, 64, 69, 88, 77, 83, 111, 57, 55, 60],
+      }]
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>

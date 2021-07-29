@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>面积图颜色渐变</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 600px; height: 300px; border: 1px solid #eee;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('chart'));
+    const option = {
+      backgroundColor: 'rgb(16, 30, 66)',
+      grid: {
+        top: 20,
+        left: 10,
+        right: 10,
+        bottom: 20,
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        axisLabel: {
+          color: '#fff',
+        },
+        data: ['12:00', '13:00', '14:00', '15:00', '16:00']
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: {
+          lineStyle: {
+            width: 2,
+            color: 'rgba(189, 233, 255, 0.1)',
+          },
+        }
+      },
+      series: [{
+        data: [400, 1110, 900, 2000, 1200],
+        type: 'line',
+        lineStyle: {
+          color: '#EB61FA',
+        },
+        itemStyle: {
+          color: '#fff',
+          shadowColor: '#FFF5D5',
+          shadowBlur: 7
+        },
+        smooth: true,
+        symbolSize: 5,
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            offset: 0,
+            color: 'rgba(156, 43, 224, 0.5)'
+          }, {
+            offset: 1,
+            color: 'rgba(156, 43, 224, 0)'
+          }])
+        },
+      }]
+    };
+    myChart.setOption(option);
+  </script>
+</body>
+</html>

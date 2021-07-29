@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>折线图</title>
+  <title>柱状图颜色渐变</title>
   <style></style>
 </head>
 <body>
@@ -29,19 +29,20 @@
       },
       series: [{
         data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line',
-        smooth: true,
-        markPoint: {
-          data: [
-            { type: 'max', name: '最大值' },
-            { type: 'min', name: '最小值' }
-          ]
-        },
-        markLine: {
-          data: [
-            { type: 'average', name: '平均值' }
-          ]
-        },
+        type: 'bar',
+        barWidth: 12,
+        itemStyle: {
+          borderRadius: [8, 8, 0, 0],
+          // 渐变色生成器, 前4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            offset: 0,
+            color: 'rgba(255, 0, 0, 1)'
+          }, {
+            offset: 1,
+            color: 'rgba(255, 0, 0, 0)'
+            }
+          ])
+        }
       }]
     };
     myChart.setOption(option);
