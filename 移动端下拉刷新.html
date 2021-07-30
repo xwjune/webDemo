@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>移动端下拉刷新</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      margin: 0;
+    }
+    .refresh-content {
+      height: 100%;
+    }
+    .refresh-text {
+      display: block;
+      margin-top: -30px;
+      height: 30px;
+      line-height: 30px;
+      font-size: 12px;
+      text-align: center;
+      color: #aaa;
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    ul li {
+      background-color: #eee;
+      margin-bottom: 1px;
+      padding: 15px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="refresh-content">
+    <span class="refresh-text"></span>
+    <div class="refresh-body">
+      <ul>
+        <li>111</li>
+        <li>222</li>
+        <li>333</li>
+        <li>444</li>
+        <li>555</li>
+        <li>666</li>
+        <li>777</li>
+        <li>888</li>
+        <li>999</li>
+        <li>aaa</li>
+        <li>bbb</li>
+        <li>ccc</li>
+        <li>ddd</li>
+        <li>eee</li>
+        <li>fff</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    const element = document.querySelector('.refresh-content');
+    const text = document.querySelector('.refresh-text');
+    let startPos = 0; // 起始位置
+    let offsetPos = 0; // 偏移位置
+
+    element.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      // console.log('初始位置：', e.touches[0].clientY);
+      startPos = e.touches[0].clientY;
+      element.style.transition = '';
+    }, false);
+
+    element.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      // console.log('当前位置：', e.touches[0].clientY);
+      offsetPos = e.touches[0].clientY - startPos;
+      if (offsetPos > 0 && offsetPos < 60) {
+        text.innerText = offsetPos < 30 ? '下拉可以刷新' : '松开立即刷新';
+        element.style.transform = `translateY(${offsetPos}px)`;
+      }
+    }, false);
+
+    element.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      text.innerText = '正在刷新';
+      element.style.transition = 'transform 0.3s ease 0.3s';
+      element.style.transform = 'translateY(0px)';
+      setTimeout(() => {
+        text.innerText = '完成刷新';
+      }, 300);
+
+      // todo ...
+    }, false);
+  </script>
+</body>
+</html>
