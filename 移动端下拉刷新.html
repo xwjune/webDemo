@@ -25,6 +25,9 @@
       text-align: center;
       color: #aaa;
     }
+    .refresh-body {
+      overflow: auto;
+    }
     ul {
       margin: 0;
       padding: 0;
@@ -39,7 +42,7 @@
 </head>
 <body>
   <div class="refresh-content">
-    <span class="refresh-text"></span>
+    <span class="refresh-text">下拉可以刷新</span>
     <div class="refresh-body">
       <ul>
         <li>111</li>
@@ -57,6 +60,14 @@
         <li>ddd</li>
         <li>eee</li>
         <li>fff</li>
+        <li>ggg</li>
+        <li>hhh</li>
+        <li>iii</li>
+        <li>jjj</li>
+        <li>kkk</li>
+        <li>lll</li>
+        <li>mmm</li>
+        <li>nnn</li>
       </ul>
     </div>
   </div>
@@ -67,16 +78,17 @@
     let offsetPos = 0; // 偏移位置
 
     element.addEventListener('touchstart', (e) => {
-      e.preventDefault();
       // console.log('初始位置：', e.touches[0].clientY);
       startPos = e.touches[0].clientY;
       element.style.transition = '';
     }, false);
 
     element.addEventListener('touchmove', (e) => {
-      e.preventDefault();
       // console.log('当前位置：', e.touches[0].clientY);
       offsetPos = e.touches[0].clientY - startPos;
+      if (offsetPos > 0) {
+        e.preventDefault();
+      }
       if (offsetPos > 0 && offsetPos < 60) {
         text.innerText = offsetPos < 30 ? '下拉可以刷新' : '松开立即刷新';
         element.style.transform = `translateY(${offsetPos}px)`;
@@ -84,13 +96,12 @@
     }, false);
 
     element.addEventListener('touchend', (e) => {
-      e.preventDefault();
       text.innerText = '正在刷新';
       element.style.transition = 'transform 0.3s ease 0.3s';
       element.style.transform = 'translateY(0px)';
-      setTimeout(() => {
-        text.innerText = '完成刷新';
-      }, 300);
+      // setTimeout(() => {
+      //   text.innerText = '完成刷新';
+      // }, 300);
 
       // todo ...
     }, false);

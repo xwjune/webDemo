@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>上拉加载</title>
+	<style type="text/css">
+		html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      margin: 0;
+    }
+    .refresh-text {
+      display: block;
+      height: 30px;
+      line-height: 30px;
+      font-size: 12px;
+      text-align: center;
+      color: #aaa;
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    ul li {
+      background-color: #eee;
+      margin-bottom: 1px;
+      padding: 15px 10px;
+    }
+	</style>
+</head>
+<body>
+<main>
+	<div class="refresh-content">
+    <div class="refresh-body">
+      <ul>
+        <li>111</li>
+        <li>222</li>
+        <li>333</li>
+        <li>444</li>
+        <li>555</li>
+        <li>666</li>
+        <li>777</li>
+        <li>888</li>
+        <li>999</li>
+        <li>aaa</li>
+        <li>bbb</li>
+        <li>ccc</li>
+        <li>ddd</li>
+        <li>eee</li>
+        <li>fff</li>
+        <li>ggg</li>
+      </ul>
+    </div>
+    <span class="refresh-text"></span>
+  </div>
+</main>
+
+<script type="text/javascript">
+  const text = document.querySelector('.refresh-text');
+  const container = document.querySelector('.refresh-body ul');
+  window.onscroll = debounce(() => {
+    if (getScrollTop() + getClientHeight() === getScrollHeight()) {
+      text.innerText = '加载中...';
+      fetchData();
+    }
+  }, 100);
+
+  function fetchData() {
+    setTimeout(() => {
+      const li = document.createElement('li');
+      li.innerText = `new add: ${new Date().getTime()}`;
+      container.appendChild(li);
+      text.innerText = '';
+    }, 1000);
+  }
+
+  // 获取当前滚动条的位置
+  function getScrollTop() {
+    return document.documentElement.scrollTop || document.body.scrollTop;
+  }
+
+  // 获取当前可视范围的高度
+  function getClientHeight() {
+    return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  }
+
+  // 获取文档完整的高度
+  function getScrollHeight() {
+    return document.documentElement.scrollHeight || document.body.scrollHeight;
+  }
+
+  // 函数防抖
+  function debounce(func, wait) {
+    let timeout;
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        func.apply(this, arguments);
+      }, wait);
+    };
+  }
+</script>
+</body>
+</html>
