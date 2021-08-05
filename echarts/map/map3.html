@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>地图路径图</title>
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+    }
+    #myChart {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="myChart"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('myChart'));
+    const mapType = 'zhejiang';
+    const mapData = [{
+      name: '杭州市',
+      value: [120.153576, 30.287459],
+      symbolSize: 15,
+      itemStyle: {
+        color: 'rgb(255, 0, 0)',
+      },
+    }, {
+      name: '宁波市',
+      value: [121.549792, 29.868388]
+    }, {
+      name: '温州市',
+      value: [120.672111, 28.000575]
+    }, {
+      name: '嘉兴市',
+      value: [120.750865, 30.762653]
+    }, {
+      name: '湖州市',
+      value: [120.102398, 30.867198]
+    }, {
+      name: '绍兴市',
+      value: [120.582112, 29.997117]
+    }, {
+      name: '金华市',
+      value: [119.649506, 29.089524]
+    }, {
+      name: '衢州市',
+      value: [118.87263, 28.941708]
+    }, {
+      name: '舟山市',
+      value: [122.106863, 30.016028]
+    }, {
+      name: '台州市',
+      value: [121.428599, 28.661378]
+    }, {
+      name: '丽水市',
+      value: [119.921786, 28.451993]
+    }];
+    const option = {
+      backgroundColor: '#013954',
+      geo: {
+        map: mapType,
+        roam: true,
+        label: {
+          normal: {
+            show: false,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        itemStyle: {
+          normal: {
+            color: 'rgba(51, 69, 89, .5)', // 地图背景色
+            borderColor: '#516a89',
+            borderWidth: 1,
+          },
+          emphasis: {
+            color: 'rgba(37, 43, 61, .5)', // 悬浮背景
+          },
+        },
+      },
+      series: [{
+        type: 'effectScatter',
+        coordinateSystem: 'geo',
+        showEffectOn: 'render',
+        rippleEffect: {
+          brushType: 'stroke'
+        },
+        symbolSize: 10,
+        hoverAnimation: true,
+        label: {
+					normal: {
+						show: true,
+						position: 'right', // 显示位置
+						offset: [5, 0], // 偏移设置
+						formatter(params) {
+							return params.data.name;
+						},
+						fontSize: 13
+					},
+					emphasis: {
+						show: true
+					}
+				},
+        itemStyle: {
+          color: 'rgb(244, 141, 31)',
+        },
+        data: mapData,
+      }, {
+				type: 'lines',
+				effect: {
+					show: true,
+					symbol: 'arrow', // 箭头图标
+					symbolSize: 5, // 图标大小
+				},
+				lineStyle: {
+					normal: {
+            color: 'rgb(244, 141, 31)',
+            opacity: 0.2,
+						curveness: 0.2 // 尾迹线条曲直度
+					}
+				},
+				data: mapData.reduce((total, cur, index) => {
+          if (index !== 0) {
+            total.push({
+              coords: [cur.value, mapData[0].value]
+            });
+          }
+          return total;
+        }, [])
+			}]
+    };
+    fetch(`./geoJson/province/zhejiang.json`)
+      .then(res => res.json())
+      .then((res) => {
+        echarts.registerMap(mapType, res);
+        myChart.setOption(option);
+      });
+  </script>
+</body>
+</html>
