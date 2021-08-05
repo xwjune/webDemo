@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>地图热力图</title>
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+    }
+    #myChart {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="myChart"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const myChart = echarts.init(document.getElementById('myChart'));
+    const mapType = 'zhejiang';
+    const mapData = [{
+    //   name: '杭州市',
+    //   value: [120.153576, 30.287459, 1000],
+    // }, {
+      name: '上城区',
+      value: [120.171465,30.250236, 1000],
+    }, {
+      name: '西湖区',
+      value: [120.147376,30.272934, 1000]
+    }, {
+      name: '拱墅区',
+      value: [120.150053,30.314697, 1000]
+    }, {
+      name: '滨江区',
+      value: [120.21062,30.206615, 1000]
+    }, {
+      name: '余杭区',
+      value: [19.978959,30.27365, 1000]
+    }, {
+      name: '临平区',
+      value: [120.299376,30.419025, 900]
+    }, {
+      name: '钱塘区',
+      value: [120.493972,30.322904, 500]
+    }, {
+      name: '临安区',
+      value: [119.715101,30.231153, 800]
+    }, {
+      name: '宁波市',
+      value: [121.549792, 29.868388, 900]
+    }, {
+      name: '温州市',
+      value: [120.672111, 28.000575, 800]
+    }, {
+      name: '嘉兴市',
+      value: [120.750865, 30.762653, 700]
+    }, {
+      name: '湖州市',
+      value: [120.102398, 30.867198, 700]
+    }, {
+      name: '绍兴市',
+      value: [120.582112, 29.997117, 700]
+    }, {
+      name: '金华市',
+      value: [119.649506, 29.089524, 600]
+    }, {
+      name: '衢州市',
+      value: [118.87263, 28.941708, 400]
+    }, {
+      name: '舟山市',
+      value: [122.106863, 30.016028, 250]
+    }, {
+      name: '台州市',
+      value: [121.428599, 28.661378, 300]
+    }, {
+      name: '丽水市',
+      value: [119.921786, 28.451993, 220]
+    }];
+    const option = {
+      backgroundColor: '#013954',
+      geo: {
+        map: mapType,
+        roam: true,
+        // zlevel: 2,
+        label: {
+          show: true,
+          color: '#fff',
+          emphasis: {
+            show: true,
+            color: '#fff',
+          }
+        },
+        itemStyle: {
+          normal: {
+            color: 'rgba(51, 69, 89, .5)', // 地图背景色
+            borderColor: '#516a89',
+            borderWidth: 1,
+          },
+          emphasis: {
+            color: 'rgba(37, 43, 61, .5)', // 悬浮背景
+          },
+        },
+      },
+      visualMap: {
+        min: 0,
+        max: 1000,
+        inRange: {
+          color: ['lightskyblue', 'yellow', 'orangered']
+        }
+      },
+      series: [{
+				type: 'heatmap',
+        coordinateSystem: 'geo',
+        data: mapData,
+			}]
+    };
+    fetch(`./geoJson/province/zhejiang.json`)
+      .then(res => res.json())
+      .then((res) => {
+        echarts.registerMap(mapType, res);
+        myChart.setOption(option);
+      });
+  </script>
+</body>
+</html>
