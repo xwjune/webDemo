@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no,email=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>高德地图选址</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <iframe
+    id="test"
+    name="test"
+    src="https://m.amap.com/picker/?key=c59c6698086d9d73f5730bcfaf13ce87&center=120.160811,30.274113"
+  ></iframe>
+
+  <script>
+    async function request(url, config) {
+      const options = {
+        method: config.method || 'POST',
+        mode: config.mode || 'cors',
+      };
+      if (config.method === 'POST') {
+        Object.assign(options, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (config.data) {
+          options.body = JSON.stringify(config.data);
+        }
+      }
+      if (config.headers) {
+        Object.assign(options, {
+          headers: {
+            ...options.headers,
+            ...config.headers,
+          },
+        });
+      }
+      const response = await fetch(url, options);
+      const result = await response.json();
+      return result;
+    }
+
+    const iframe = document.getElementById('test').contentWindow;
+    document.getElementById('test').onload = function(){
+      iframe.postMessage('hello','https://m.amap.com/picker/');
+    };
+    window.addEventListener("message", function(e){
+      if (e.origin !== 'https://m.amap.com' || !e.data) {
+        return;
+      }
+      const { data } = e;
+      console.log('result:', e.data);
+      request(`https://restapi.amap.com/v3/geocode/regeo?key=9378b6d8be8a3c8a44b89593b3165991&location=${data.location}`, {
+        method: 'GET',
+      })
+        .then((res) => {
+          console.log(res);
+          // city 当城市是省直辖县时返回为空，以及城市为北京、上海、天津、重庆四个直辖市时，该字段返回为[]
+        });
+    });
+  </script>
+</body>
+</html>

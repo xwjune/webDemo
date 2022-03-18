@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>图片上传预览</title>
+  <style>
+    img {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <p>方法一：window.URL.createObjectURL</p>
+    <img class="img" />
+    <input
+      type="file"
+      accept="image/*"
+      onchange="onFileChange()"
+    />
+  </div>
+  <div>
+    <p>方法二：FileReader</p>
+    <img class="img2" />
+    <input
+      type="file"
+      accept="image/*"
+      onchange="onFileChange2()"
+    />
+  </div>
+  <script>
+    function onFileChange() {
+      const event = window.event;
+      const file = event.target.files[0];
+      const img = document.querySelector('.img');
+      const src = window.URL.createObjectURL(file);
+      img.src = src;
+      getImgWidth(src);
+    }
+
+    function onFileChange2() {
+      const event = window.event;
+      const file = event.target.files[0];
+      const img = document.querySelector('.img2');
+      const reader = new window.FileReader(); // 调用FileReader
+      reader.readAsDataURL(file); // 将文件读取为 DataURL(base64)
+      reader.onload = (e) => {
+        const src = e.target.result;
+        img.src = src;
+        getImgWidth(src);
+      };
+    }
+
+    // 获取元素尺寸
+    function getImgWidth(src) {
+      const image = new window.Image();
+      image.onload = () => {
+        console.log(image.width, image.height);
+      };
+      image.src = src;
+    }
+  </script>
+</body>
+</html>

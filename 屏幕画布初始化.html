@@ -16,8 +16,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 3240px;
-      height: 1080px;
+      width: 0;
+      height: 0;
       transform-origin: left top;
       background: rgb(16, 30, 66);
       color: #fff;
@@ -46,47 +46,55 @@
     }
     /**
      * 屏幕画布初始化【适配设计稿】
-     * 
-     * @param {Number} w - 原始尺寸宽
-     * @param {Number} h - 原始尺寸高
+     *
+     * @param {Number} width - 原始尺寸宽
+     * @param {Number} height - 原始尺寸高
      */
-    function init(w, h) {
-      const width = getWinWidth(); // 屏幕尺寸宽
-      const height = getWinHeight(); // 屏幕尺寸高
-      const scaleX = width / w; // 横向比例
-      const scaleY = height / h; // 纵向比例
-      const scale =  scaleX < scaleY ? scaleX : scaleY;  // 最终比例
-      let top = 0;
-      let left = 0;
-      if (scaleX > scaleY) {
-        left = (width - w * scale) / 2;
+     function resizeScreen(width, height) {
+      const clientWidth = getWinWidth(); // 屏幕尺寸宽
+      const clientHeight = getWinHeight(); // 屏幕尺寸高
+      let top;
+      let left;
+      let scale; // 最终缩放比例
+      // 获取比例：根据当前屏幕的宽高比和原始尺寸的宽高比，确定屏幕的最终缩放比例
+      if (clientWidth / clientHeight > width / height) {
+        scale = clientHeight / height; // 纵向比例
+        top = 0;
+        left = (clientWidth - width * scale) / 2;
       } else {
-        top = (height - h * scale) / 2;
+        scale = clientWidth / width; // 横向比例
+        top = (clientHeight - height * scale) / 2;
+        left = 0;
       }
       const dom = document.querySelector('.page');
+      dom.style.width = `${width}px`;
+      dom.style.height = `${height}px`;
       dom.style.transform = `scale(${scale})`;
       dom.style.top = `${top}px`;
       dom.style.left = `${left}px`;
     }
-    init(3240, 1080);
+    resizeScreen(3240, 1080);
+    window.addEventListener('resize', () => {
+      resizeScreen(3240, 1080);
+    });
 
     /**
-    // 屏幕尺寸 1920 * 946 
-    //                   最终比例    横向比例      纵向比例     top       left
+    // 屏幕尺寸 1920 * 946
+    //                           最终比例    横向比例      纵向比例     top       left
     // 全部小于屏幕
-    init(1024, 900); //  1.05111    1.875       1.05111     0         421.831
+    resizeScreen(1024, 900); //  1.05111    1.875       1.05111     0         421.831
     // 全部小于屏幕
-    init(1900, 700); //  1.01053    1.01053     1.35142     119.316   0
+    resizeScreen(1900, 700); //  1.01053    1.01053     1.35142     119.316   0
     // 宽大于屏幕
-    init(1920, 1080); // 0.875926   1           0.875926    0         119.111
+    resizeScreen(1920, 1080); // 0.875926   1           0.875926    0         119.111
     // 高大于屏幕
-    init(2000, 946); //  0.96       0.96        1           18.92     0
+    resizeScreen(2000, 946); //  0.96       0.96        1           18.92     0
     // 高小于屏幕
-    init(1920, 800); //  1          1           1.1825      73        0
+    resizeScreen(1920, 800); //  1          1           1.1825      73        0
     // 宽小于屏幕
-    init(1700, 946); //  1          1.1294      1           0         110
+    resizeScreen(1700, 946); //  1          1.1294      1           0         110
     // 全部大于屏幕
-    init(3240, 1080); // 0.592593   0.592593    0.8759259   153       0
+    resizeScreen(3240, 1080); // 0.592593   0.592593    0.8759259   153       0
     **/
   </script>
 </body>

@@ -49,35 +49,35 @@
   <script>
     function onImgLoad() {
       const img = window.event.target || window.event.srcElement;
-      const w = img.naturalWidth;
-      const h = img.naturalHeight;
+      const width = img.naturalWidth;
+      const height = img.naturalHeight;
       imgResponsive({
-        w,
-        h,
-        width: 200,
-        height: 200,
+        width,
+        height,
+        containerWidth: 200,
+        containeHeight: 200,
         dom: img,
       });
     }
     /**
-     * @param {Number} w - 原始尺寸宽
-     * @param {Number} h - 原始尺寸高
-     * @param {Number} width - 容器尺寸宽
-     * @param {Number} height - 容器尺寸高
+     * @param {Number} width - 原始尺寸宽
+     * @param {Number} height - 原始尺寸高
+     * @param {Number} containerWidth - 容器尺寸宽
+     * @param {Number} containeHeight - 容器尺寸高
      */
-    function imgResponsive({w, h, width, height, dom}) {
-      const scaleX = width / w; // 横向比例
-      const scaleY = height / h; // 纵向比例
+    function imgResponsive({ width, height, containerWidth, containeHeight, dom }) {
+      const scaleX = containerWidth / width; // 横向比例
+      const scaleY = containeHeight / height; // 纵向比例
       const scale =  scaleX < scaleY ? scaleX : scaleY;  // 最终比例
       let top = 0;
       let left = 0;
       if (scaleX > scaleY) {
-        left = (width - w * scale) / 2;
+        left = (containerWidth - width * scale) / 2;
       } else {
-        top = (height - h * scale) / 2;
+        top = (containeHeight - height * scale) / 2;
       }
-      dom.style.width = `${w}px`;
-      dom.style.height = `${h}px`;
+      dom.style.width = `${width}px`;
+      dom.style.height = `${height}px`;
       dom.style.top = `${top}px`;
       dom.style.left = `${left}px`;
       dom.style.transform = `scale(${scale})`;
