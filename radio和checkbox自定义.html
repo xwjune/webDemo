@@ -92,6 +92,30 @@
       transform: rotate(45deg) scale(1) translate(-50%, -50%);
     }
 
+    .radio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+      border-radius: 16px;
+      background-color: #fff;
+      border: 1px solid #979797;
+    }
+    .radio.checked {
+      background-color: #2864F3;
+      border: 1px solid #2864F3;
+    }
+    .radio.checked::after {
+      content: "";
+      width: 4px;
+      height: 8px;
+      border: 2px solid #fff;
+      border-left: 0;
+      border-top: 0;
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 <body>
@@ -137,5 +161,8 @@
       <span>画画</span>
     </label>
   </div>
+  <p>单选框</p>
+  <div class="radio"></div>
+  <div class="radio checked"></div>
 </body>
 </html>

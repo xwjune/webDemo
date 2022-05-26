@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>三列布局-绝对定位</title>
+  <style>
+    .box {
+      position: relative;
+    }
+    .box > div {
+      position: absolute;
+      height: 100px;
+    }
+    .left {
+      left: 0;
+      width: 100px;
+      background: red;
+    }
+    .middle {
+      left: 100px;
+      right: 200px;
+      background: green;
+    }
+    .right {
+      right: 0;
+      width: 200px;
+      background: blue;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="left">1</div>
+    <div class="middle">2</div>
+    <div class="right">3</div>
+  </div>
+</body>
+</html>

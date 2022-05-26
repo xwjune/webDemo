@@ -64,7 +64,7 @@
   const text = document.querySelector('.refresh-text');
   const container = document.querySelector('.refresh-body ul');
   window.onscroll = debounce(() => {
-    if (getScrollTop() + getClientHeight() === getScrollHeight()) {
+    if (getScrollTop() + getClientHeight() >= getScrollHeight()) {
       text.innerText = '加载中...';
       fetchData();
     }
