@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>promise实现</title>
+</head>
+<body>
+  <script>
+    // 考虑异步
+    const PENDING = 'pending';
+    const FULFILLED = 'fulfilled';
+    const REJECTED = 'rejected';
+
+    class MyPromise {
+      constructor(executor) {
+        if (typeof executor !== 'function') {
+          throw new Error('Promise resolver is not a function');
+        }
+
+        // 状态
+        this.state = PENDING;
+        // 返回值
+        this.result = undefined;
+        // 成功回调
+        this.successCallback = undefined;
+        // 失败回调
+        this.faillCallback = undefined;
+
+        try {
+          executor(this.resolve.bind(this), this.reject.bind(this));
+        } catch (err) {
+          this.reject(err);
+        }
+      }
+
+      resolve(value) {
+        if (this.state === PENDING) {
+          this.state = FULFILLED;
+          this.result = value;
+          // 判断成功回调是否存在，如果存在则调用
+          this.successCallback && this.successCallback(this.result);
+        }
+      }
+
+      reject(err) {
+        if (this.state === PENDING) {
+          this.state = REJECTED;
+          this.result = err;
+          // 判断失败回调是否存在，如果存在则调用
+          this.faillCallback && this.faillCallback(this.result);
+        }
+      }
+
+      then(onFuifilled, onRejected) {
+        if (this.state === FULFILLED && onFuifilled) {
+          onFuifilled(this.result);
+        } else if (this.state === REJECTED && onRejected) {
+          onRejected(this.result);
+        } else {
+          // 等待
+          // 将成功和失败回调存储
+          this.successCallback = onFuifilled;
+          this.faillCallback = onRejected;
+        }
+      }
+    };
+
+    new MyPromise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('成功');
+      }, 1000);
+    }).then((r) => {
+      console.log(r);
+    });
+
+  </script>
+</body>
+</html>

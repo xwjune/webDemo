@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>promise实现</title>
+</head>
+<body>
+  <script>
+    const PENDING = 'pending';
+    const FULFILLED = 'fulfilled';
+    const REJECTED = 'rejected';
+
+    class MyPromise {
+      constructor(executor) {
+        if (typeof executor !== 'function') {
+          throw new Error('Promise resolver is not a function');
+        }
+
+        // 状态
+        this.state = PENDING;
+        // 返回值
+        this.result = undefined;
+
+        try {
+          executor(this.resolve.bind(this), this.reject.bind(this));
+        } catch (err) {
+          this.reject(err);
+        }
+      }
+
+      resolve(value) {
+        if (this.state === PENDING) {
+          this.state = FULFILLED;
+          this.result = value;
+        }
+      }
+
+      reject(err) {
+        if (this.state === PENDING) {
+          this.state = REJECTED;
+          this.result = err;
+        }
+      }
+
+      then(onFuifilled, onRejected) {
+        if (this.state === FULFILLED && onFuifilled) {
+          onFuifilled(this.result);
+        } else if (this.state === REJECTED && onRejected) {
+          onRejected(this.result);
+        }
+      }
+    };
+
+    new MyPromise((resolve, reject) => {
+      resolve('成功');
+    }).then((r) => {
+      console.log(r);
+    }, (r) => {
+      console.log(r);
+    });
+    // 成功
+
+    // new MyPromise((resolve, reject) => {
+    //   resolve('失败');
+    // }).then((r) => {
+    //   console.log(r);
+    // }, (r) => {
+    //   console.log(r);
+    // });
+    // // 失败
+
+    // new MyPromise((resolve, reject) => {
+    //   resolve('成功');
+    //   resolve('失败');
+    // }).then((r) => {
+    //   console.log(r);
+    // }, (r) => {
+    //   console.log(r);
+    // });
+    // // 成功
+
+  </script>
+</body>
+</html>
