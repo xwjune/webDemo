@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>echarts 四象限气泡图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 100%; height: 600px; border: 1px solid #eee; position: relative;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const option = {
+      title: [
+        {
+          text: '性格群体分析',
+          subtext: '分析对象：XX区域',
+          left: 'center',
+          textStyle: {
+            fontSize: 16,
+          },
+        },
+        {
+          text: '情绪通话量高，离散系数高',
+          z: 1,
+          textAlign: 'center',
+          left: '85%',
+          top: '7%',
+          textStyle: {
+            fontSize: 14,
+            fontWeight: 'normal',
+            color: '#999',
+          },
+        },
+        {
+          text: '情绪通话量高，离散系数低',
+          z: 1,
+          textAlign: 'center',
+          left: '85%',
+          top: '85%',
+          textStyle: {
+            fontSize: 14,
+            fontWeight: 'normal',
+            color: '#999',
+          },
+        },
+        {
+          text: '情绪通话量低，离散系数低',
+          z: 1,
+          textAlign: 'center',
+          left: '25%',
+          top: '85%',
+          textStyle: {
+            fontSize: 14,
+            fontWeight: 'normal',
+            color: '#999',
+          },
+        },
+        {
+          text: '情绪通话量低，离散系数高',
+          z: 1,
+          textAlign: 'center',
+          left: '25%',
+          top: '7%',
+          textStyle: {
+            fontSize: 14,
+            fontWeight: 'normal',
+            color: '#999',
+          },
+        },
+      ],
+      grid: {
+        top: '10%',
+        left: '3%',
+        right: '7%',
+        bottom: '1%',
+        containLabel: true,
+      },
+      tooltip: {
+        showDelay: 0,
+        formatter: (params) => {
+          if (params.value.length > 1) {
+            return `${params.seriesName}:<br/>${params.value[0]}cm${params.value[1]}kg`;
+          }
+          return false;
+        },
+      },
+      // legend: [
+      //     {
+      //         orient: 'horizontal',
+      //         x: '89%',
+      //         y: '7%',
+      //         align: 'left',
+      //         data: ['二'],
+      //         textStyle: {
+      //         fontSize: 14,
+      //         },
+      //     },
+      //     {
+      //         orient: 'horizontal',
+      //         x: '94%',
+      //         y: '7%',
+      //         align: 'left',
+      //         data: ['一'],
+      //         textStyle: {
+      //         fontSize: 14,
+      //         },
+      //     },
+      //     {
+      //         orient: 'horizontal',
+      //         x: '89%',
+      //         y: '10%',
+      //         align: 'left',
+      //         data: ['四'],
+      //         textStyle: {
+      //         fontSize: 14,
+      //         },
+      //     },
+      //     {
+      //         orient: 'horizontal',
+      //         x: '94%',
+      //         y: '10%',
+      //         align: 'left',
+      //         data: ['三'],
+      //         textStyle: {
+      //         fontSize: 14,
+      //         },
+      //     },
+      // ],
+      xAxis: [
+        {
+          type: 'value',
+          name: '专注指数',
+        },
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          name: '人数',
+        },
+      ],
+      series: [
+        {
+          name: '一',
+          z: 3,
+          type: 'scatter',
+          symbolSize: 12,
+          itemStyle: {
+            normal: {
+              color: '#EF535C',
+            },
+          },
+          data: [
+            [0.4, 0.65],
+            [0.1, 0.59],
+            [0.3, 0.63],
+            [0.26, 0.79],
+          ],
+        },
+        {
+          name: '二',
+          z: 3,
+          type: 'scatter',
+          symbolSize: 12,
+          itemStyle: {
+            normal: {
+              color: '#6FE12F',
+            },
+          },
+          data: [
+            [0.6, 0.8],
+            [0.7, 0.66],
+            [0.8, 0.54],
+            [0.89, 0.9],
+          ],
+        },
+
+        {
+          name: '三',
+          type: 'scatter',
+          data: [
+            [0.3, 0.2],
+            [0.4, 0.28],
+          ],
+          itemStyle: {
+            normal: {
+              color: '#8B4DF6',
+            },
+          },
+        },
+        {
+          name: '四',
+          type: 'scatter',
+          data: [[0.6, 0.3]],
+          itemStyle: {
+            normal: {
+              color: '#05D6DE',
+            },
+          },
+        },
+        {
+          name: 'wu',
+          type: 'scatter',
+          data: [[0.5, 0]],
+          markLine: {
+            itemStyle: {
+              color: '#999',
+            },
+            data: [
+              {
+                type: 'average',
+                name: 'wu',
+                valueIndex: 0,
+              },
+            ],
+          },
+        },
+        {
+          name: 'six',
+          type: 'scatter',
+          data: [[0, 0.5]],
+          markLine: {
+            itemStyle: {
+              color: '#999',
+            },
+            data: [
+              {
+                type: 'average',
+                name: 'six',
+              },
+            ],
+            label: {
+              show: false,
+            },
+          },
+        },
+      ],
+    };
+    const myChart = echarts.init(document.getElementById('chart'));
+    myChart.setOption(option);
+  </script>
+</body>
+</html>

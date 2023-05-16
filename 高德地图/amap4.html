@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>高德地图</title>
+  <style>
+    #container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.15&key=c59c6698086d9d73f5730bcfaf13ce87"></script>
+  <script>
+    const map = new AMap.Map("container", {
+      resizeEnable: true,
+      center: [120.069727, 30.272649],
+      zoom: 12,
+      pitch: 65, // 地图俯仰角度，有效范围 0 度- 83 度
+      viewMode: '3D', // 地图模式
+      mapStyle: 'amap://styles/8f37a8881f1c9db22c5251efb4ac7a2f',
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>a标签下载</title>
+  <style>
+    
+  </style>
+</head>
+<body>
+  <a href="https://jmproduct.oss-cn-hangzhou.aliyuncs.com/cxt/c6a07f1c33fd416d9ff39291244a04f0.jpeg">下载</a>
+  <a href="https://imgm.gmw.cn/attachement/jpg/site215/20210904/8781363566336391294.jpg">下载</a>
+  <button onclick="download()">下载</button>
+  <script>
+    // 资源链接为同源资源，可正常下载
+    // 如果url指向第三方资源，download会失效，表现和不使用download时一致——浏览器能打开的文件，浏览器会直接打开，不能打开的文件，会直接下载。浏览器打开的文件，可以手动下载。
+    const downloadFile = async (url, name) => {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+      });
+      // 内容转变成blob地址
+      const blob = await response.blob();
+      // 创建隐藏的可下载链接
+      const fileUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', fileUrl);
+      a.setAttribute('download', name);
+      // 触发点击
+      // document.body.appendChild(a)
+      a.click();
+      // 移除
+      // setTimeout(() => document.body.removeChild(a), 1000)
+    };
+    const downloadFile2 = (url, fileName) => {
+      const x = new XMLHttpRequest();
+      x.open('GET', url, true);
+      x.responseType = 'blob';
+      x.onload = function (e) {
+        // 会创建一个 DOMString，其中包含一个表示参数中给出的对象的URL。这个 URL 的生命周期和创建它的窗口中的 document 绑定。这个新的URL 对象表示指定的 File 对象或 Blob 对象。
+        const url = window.URL.createObjectURL(x.response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+      };
+      x.send();
+    };
+    const downloadImg = async (url, name) => {
+      let canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      // img.crossOrigin = 'Anonymous';
+      img.onload = function () {
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          canvas = null;
+        }, 1000);
+      };
+      img.src = url;
+    };
+    const url = 'https://imgm.gmw.cn/attachement/jpg/site215/20210904/8781363566336391294.jpg';
+    function download() {
+      // window.location.href = url;
+      downloadFile2(
+        url,
+        'xx.jpg',
+      );
+      // downloadImg(url, 'xx.jpg');
+    }
+  </script>
+</body>
+</html>

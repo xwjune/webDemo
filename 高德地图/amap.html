@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>高德地图</title>
+  <style>
+    #container {
+      width: 500px;
+      height: 500px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.4&key=b1517265165f1c1f8ddd1c08e3fcaf93"></script>
+  <script>
+    const map = new AMap.Map("container", {
+      resizeEnable: true,
+      center: [120.069727, 30.272649],
+      zoom: 10
+    });
+
+    // 点
+    const marker = new AMap.Marker({
+      position: new AMap.LngLat(120.069727, 30.272649),
+      title: '西溪湿地'
+    });
+    map.add(marker);
+
+    // 折线
+    const polyline = new AMap.Polyline({
+      path: [
+        new AMap.LngLat(120.05636485550464, 30.28299544390822),
+        new AMap.LngLat(120.0297031479685, 30.276445999183313),
+        new AMap.LngLat(120.03739264313391, 30.274761784889083),
+      ],  
+      borderWeight: 2, // 线条宽度，默认为 1
+      strokeColor: 'red', // 线条颜色
+    });
+    map.add(polyline);
+
+    // 多边形
+    const polygon = new AMap.Polygon({
+      path: [
+        new AMap.LngLat(120.03164348787006, 30.271518030663163),
+        new AMap.LngLat(120.0339431499756, 30.265404507237356),
+        new AMap.LngLat(120.04321366283857, 30.267899869367877),
+        new AMap.LngLat(120.04659129155608, 30.274824163716865),
+      ],  
+      strokeColor: "#FF33FF", 
+      strokeWeight: 2,
+      strokeOpacity: 0.2,
+      fillOpacity: 0.4,
+      fillColor: '#1791fc',
+    });
+    map.add(polygon);
+
+    // 圆形
+    const circle = new AMap.Circle({
+      center: new AMap.LngLat(120.069727, 30.252649),  // 圆心位置
+      radius: 1000, // 圆半径
+      fillColor: 'red',   // 圆形填充颜色
+      fillOpacity: 0.6,
+      strokeColor: '#fff', // 描边颜色
+      strokeWeight: 2, // 描边宽度
+    });
+    map.add(circle);
+
+    // 椭圆
+    const ellipse = new AMap.Ellipse({
+      center: new AMap.LngLat(120.099727, 30.252649),  // 圆心位置
+      radius: [1000, 2000], // 圆半径
+      fillColor: 'red',   // 圆形填充颜色
+      fillOpacity: 0.6,
+      strokeColor: '#fff', // 描边颜色
+      strokeWeight: 2, // 描边宽度
+    });
+    map.add(ellipse);
+
+    // 矩形
+    const rectangle = new AMap.Rectangle({
+      bounds: new AMap.Bounds(
+        new AMap.LngLat(120.0784272388297, 30.21177325625276),
+        new AMap.LngLat(120.05945502645898, 30.23726486693508),
+      ),
+      strokeColor: 'red',
+      strokeWeight: 2,
+      strokeOpacity: 0.5,
+      // strokeDasharray: [30, 10],
+      // strokeStyle还支持 solid
+      strokeStyle: 'dashed',
+      fillColor: 'blue',
+      fillOpacity: 0.5,
+      cursor: 'pointer',
+    });
+    map.add(rectangle);
+  </script>
+</body>
+</html>

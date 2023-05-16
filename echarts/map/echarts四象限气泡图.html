@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>echarts 四象限气泡图</title>
+  <style></style>
+</head>
+<body>
+  <div id="chart" style="width: 100%; height: 600px; border: 1px solid #eee; position: relative;"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js"></script>
+  <script>
+    const option = {
+      legend: {
+        right: '10%',
+        top: '3%',
+        data: ['金葵花以上', '手机APP'],
+      },
+      grid: {
+        left: '8%',
+        top: '15%',
+      },
+      xAxis: {
+        splitLine: {
+          lineStyle: {
+            type: 'dashed',
+          },
+        },
+      },
+      yAxis: {
+        name: '招行客户满意度 %',
+        splitLine: {
+          lineStyle: {
+            type: 'dashed',
+          },
+        },
+        scale: true,
+      },
+      series: [
+        {
+          name: '金葵花以上',
+          data: [],
+          type: 'scatter',
+          symbolSize(data) {
+            return Math.sqrt(data[2]) / 5e2;
+          },
+          label: {
+            show: true,
+            formatter(param) {
+              return param.data[3];
+            },
+            position: 'top',
+          },
+          markLine: {
+            label: {
+              show: true,
+            },
+            lineStyle: {
+              normal: {
+                color: '#626c91',
+                type: 'solid',
+                width: 1,
+              },
+              emphasis: {
+                color: '#d9def7',
+              },
+            },
+            data: [
+              {
+                xAxis: 0.5,
+                name: '营业额平均线',
+                itemStyle: {
+                  normal: {
+                    color: '#b84a58',
+                  },
+                },
+              },
+              {
+                yAxis: 50,
+                name: '服务能力平均线',
+                itemStyle: {
+                  normal: {
+                    color: '#b84a58',
+                  },
+                },
+              },
+            ],
+          },
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(120, 36, 50, 0.5)',
+            shadowOffsetY: 5,
+            color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+              {
+                offset: 0,
+                color: 'rgb(251, 118, 123)',
+              },
+              {
+                offset: 1,
+                color: 'rgb(204, 46, 72)',
+              },
+            ]),
+          },
+        },
+        {
+          name: '手机APP',
+          data: [],
+          type: 'scatter',
+          symbolSize(data) {
+            return Math.sqrt(data[2]) / 5e2;
+          },
+          label: {
+            show: true,
+            formatter(param) {
+              return param.data[3];
+            },
+            position: 'top',
+          },
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(25, 100, 150, 0.5)',
+            shadowOffsetY: 5,
+            color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+              {
+                offset: 0,
+                color: 'rgb(129, 227, 238)',
+              },
+              {
+                offset: 1,
+                color: 'rgb(25, 183, 207)',
+              },
+            ]),
+          },
+        },
+      ],
+    };
+    function getRandomNum({ max = 100, min = 0 } = {}) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    const dataList1 = [];
+    const dataList2 = [];
+    const dataMapList = [
+      '信用卡_接受账单还款',
+      '信贷_申请住房按揭',
+      '财富_产品赎回',
+      '信用卡_消费',
+      '支付结算_卡片服务',
+      '支付结算_客户福利活动',
+      '财富_查询信息',
+      '信用卡_分期产品',
+      '信用卡_消费',
+      '信贷_申请个人消费贷',
+    ]; // 这里是你自己的数据map字典数据
+    dataMapList.forEach((q) => {
+      const arr1 = [
+        +Math.random().toFixed(2), // 横坐标
+        getRandomNum({ max: 100, min: 0 }), // 纵坐标
+        getRandomNum({ max: 1000000000, min: 10000000 }), // 气泡的大小，不要太小，用我这个就可以
+        q,
+        '金葵花以上', // 类别数据名称
+      ];
+      const arr2 = [
+        +Math.random().toFixed(2),
+        getRandomNum({ max: 100, min: 0 }),
+        getRandomNum({ max: 1000000000, min: 10000000 }),
+        q,
+        '手机APP',
+      ];
+      dataList1.push(arr1);
+      dataList2.push(arr2);
+    });
+    option.series[0].data = dataList1;
+    option.series[1].data = dataList2;
+
+    const myChart = echarts.init(document.getElementById('chart'));
+    myChart.setOption(option);
+  </script>
+</body>
+</html>
