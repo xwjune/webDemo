@@ -110,3 +110,39 @@ async function request(url, config) {
   const result = await response.json();
   return result;
 }
+
+// 休眠
+// 同步
+function sleep(ms = 0) {
+  let sleepSwitch = true;
+  const s = Date.now();
+  while (sleepSwitch) {
+    if (Date.now() - s > ms) {
+      sleepSwitch = false;
+    }
+  }
+}
+function sleep2(ms) {
+  const start = new Date().getTime();
+  while(true) {
+    if (new Date().getTime() - start > ms) {
+      break;
+    }
+  }
+}
+function asyncPrint() {
+  sleep(2000);
+  console.log('hello');
+  sleep2(2000);
+  console.log('world');
+}
+// 异步
+function sleep3(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};
+async function asyncPrint2() {
+  await sleep3(2000);
+  console.log('hello');
+}
