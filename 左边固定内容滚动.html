@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>左边固定内容滚动</title>
+  <style>
+    html, body {
+      width: 100%;
+      margin: 0;
+    }
+    .box {
+      display: flex;
+    }
+    .left {
+      width: 200px;
+      flex-shrink: 0;
+      background: red;
+    }
+    .left div {
+      height: 300px;
+    }
+    .body {
+      position: relative;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .body  div {
+      height: 300px;
+      width: 1200px;
+      border: 1px dashed #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="left">
+      <div>11</div>
+      <div>22</div>
+      <div>33</div>
+      <div>44</div>
+    </div>
+    <div class="body">
+      <div>aa</div>
+      <div>bb</div>
+      <div>cc</div>
+      <div>dd</div>
+    </div>
+  </div>
+  <script>
+  </script>
+</body>
+</html>

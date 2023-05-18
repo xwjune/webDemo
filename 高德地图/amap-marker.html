@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>高德地图-地图选点标记</title>
+  <style type="text/css">
+    body, html {
+      margin: 0px;
+      width: 100%;
+      height: 100%;
+    }
+    #gmap {
+      width: 100%;
+      height: calc(100% - 50px);
+    }
+    .result {
+      padding-top: 20px;
+      height: 50px;
+    }
+    input {
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="result">
+    <input type="text" placeholder="经度" name="lng">
+    <input type="text" placeholder="纬度" name="lat">
+    <input type="text" placeholder="地址" name="address" style="width: 500px;">
+  </div>
+  <div id="gmap"></div>
+  <script src="https://webapi.amap.com/maps?v=1.4.4&key=81b8dc6f1efbe63abc091a512c3797a6&plugin=AMap.Geocoder"></script>
+  <script>
+    // 根据地址获取经纬度
+    function getLocation(address) {
+      return new Promise((resolve, reject) => {
+        new window.AMap.Geocoder().getLocation(address, (status, result) => {
+          if (status === 'complete' && result.info === 'OK') {
+            if (result.geocodes.length) {
+              const location = result.geocodes[0].location;
+              const lnglat = [location.lng, location.lat];
+              resolve(lnglat);
+            } else {
+              reject(new Error('经纬度获取失败'));
+            }
+          } else {
+            reject(new Error('经纬度获取失败'));
+          }
+        });
+      });
+    }
+
+    // 点标注
+    function marker(map, param) {
+      if (!map || !param || !param.position) return;
+
+      map.setCenter(param.position);
+      const myMarker = new window.AMap.Marker({
+        position: param.position,
+        draggable: param.draggable,
+        map,
+      });
+      if (param.draggable) {
+        window.AMap.event.addListener(myMarker, 'dragging', () => {
+          const pos = myMarker.getPosition();
+          param.dragging(pos);
+        });
+      }
+      if (param.dragend) {
+        window.AMap.event.addListener(myMarker, 'dragend', () => {
+          const pos = myMarker.getPosition();
+          param.dragend(pos);
+        });
+      }
+    }
+
+    // 初始
+    function init(param) {
+      const map = new window.AMap.Map(param.id, {
+        zoom: 15,
+        center: param.lnglat,
+      });
+      window.AMap.plugin(['AMap.Scale'], () => {
+        map.addControl(new window.AMap.Scale());
+      });
+      return map;
+    }
+
+    let map = null;
+    const address = '浙江省杭州市余杭区未来科技城海创园';
+    document.querySelector('input[name=address]').value = address;
+    new AMap.Geocoder().getLocation(address, (status, result) => {
+      if (status === 'complete' && result.info === 'OK') {
+        if (result.geocodes.length) {
+          const { location } = result.geocodes[0];
+          map = init({
+            id: 'gmap',
+            lnglat: [location.lng, location.lat],
+          });
+          document.querySelector('input[name=lng]').value = location.lng;
+          document.querySelector('input[name=lat]').value = location.lat;
+          marker(map, {
+            position: [location.lng, location.lat],
+            draggable: true,
+            dragging(position) {
+              document.querySelector('input[name=address]').value = '检索地址中......';
+              document.querySelector('input[name=lng]').value = position.lng;
+              document.querySelector('input[name=lat]').value = position.lat;
+            },
+            dragend(position) {
+              const geocoder = new AMap.Geocoder({
+                radius: 1000,
+                extensions: 'all',
+              });
+              geocoder.getAddress([position.lng, position.lat], (status, result) => {
+                if (status === 'complete' && result.info === 'OK') {
+                  const address = result.regeocode.formattedAddress;
+                  document.querySelector('input[name=address]').value = address;
+                }
+              });
+            }
+          });
+        } else {
+          console.log('经纬度获取失败');
+        }
+      } else {
+        console.log('经纬度获取失败');
+      }
+    });
+  </script>
+</body>
+</html>
