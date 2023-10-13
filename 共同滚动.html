@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>共同滚动</title>
+    <style>
+      .grid {
+        height: 100px;
+        width: 200%;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 1px, transparent 0),
+          linear-gradient(rgba(0, 0, 0, 0.5) 1px, transparent 0);
+        background-size: 50px 50px;
+        background-color: white;
+      }
+      .top .grid, 
+      .top2 .grid {
+        height: 50px;
+        background-image: linear-gradient(to right, rgba(255, 0, 0, 0.5) 1px, transparent 0),
+          linear-gradient(rgba(255, 0, 0, 0.5) 1px, transparent 0);
+      }
+      .top, 
+      .main,
+      .box {
+        overflow: auto;
+      }
+      .top {
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>方式1</h3>
+    <div class="top">
+      <div class="grid"></div>
+    </div>
+    <div class="main">
+      <div class="grid"></div>
+    </div>
+    <h3>方式2</h3>
+    <div class="box">
+      <div class="top2">
+        <div class="grid"></div>
+      </div>
+      <div class="main2">
+        <div class="grid"></div>
+      </div>
+    </div>
+    <script>
+      document.querySelector('.main').addEventListener('scroll', (e) => {
+        const left = e.target.scrollLeft;
+        console.log(left);
+        document.querySelector('.top').scrollTo(left, 0);
+      });
+    </script>
+  </body>
+</html>
