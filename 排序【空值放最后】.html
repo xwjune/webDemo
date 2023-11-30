@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>排序【空值放最后】</title>
+  </head>
+  <body>
+    <script>
+      function sortStr(list, type) {
+        list.sort((a, b) => {
+          let after = a;
+          let before = b;
+          if (type === 'desc') {
+            after = b;
+            before = a;
+          }
+          if(a === "" || a === null || a === undefined) return 1; // 保证空值始终放最后
+          if(b === "" || b === null || b === undefined) return -1; // 保证空值始终放最后
+          return after.localeCompare(before);
+        });
+        return list;
+      }
+      function sortNumber(list, type) {
+        list.sort((a, b) => {
+          let after = a;
+          let before = b;
+          if (type === 'desc') {
+            after = b;
+            before = a;
+          }
+          if(a === "" || a === null || a === undefined) return 1; // 保证空值始终放最后
+          if(b === "" || b === null || b === undefined) return -1; // 保证空值始终放最后
+          return after - before;
+        });
+        return list;
+      }
+      const strArr = ['张三', '李白', '', '王五', ''];
+      const numArr = [20, 15, '', 10, ''];
+      console.log(sortStr(strArr, 'asc'));
+      console.log(sortStr(strArr, 'desc'));
+      console.log(sortNumber(numArr, 'asc'));
+      console.log(sortNumber(numArr, 'desc'));
+      // const list = ['张三', '李白', '', '王五', ''];
+      // list.sort(function(a, b) {
+      //   if(a === "" || a === null) return 1;
+      //   if(b === "" || b === null) return -1;
+      //   return a.localeCompare(b);
+      // });
+      // console.log(list);
+    </script>
+  </body>
+</html>
