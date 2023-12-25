@@ -1,103 +1,123 @@
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-        <title>两点连线</title>
-        <style>
-            .pointStart, .pointEnd {
-                position: absolute;
-            }
-            .line {
-                position: absolute;
-                width: 2px;
-                /* background: #000; */
-                background: linear-gradient(to bottom, #000 15px, transparent 0);
-                background-size: 100% 30px;
-                transform-origin: 0 0;
-                cursor: pointer;
-            }
-            .line::after {
-                content: '';
-                position: absolute;
-                bottom: -2px;
-                left: -3px;
-                display: block;
-                width: 8px;
-                height: 10px;
-                clip-path: polygon(0 0, 100% 0, 50% 100%);
-                background-color: #000;
-            }
-        </style>
-    </head>
-    <body>
-        <span>
-            <label>方向：</label>
-            <select id="direction">
-                <option value="0">正下方</option>
-                <option value="1">左下方</option>
-                <option value="2">正左方</option>
-                <option value="3">左上方</option>
-                <option value="4">正上方</option>
-                <option value="5">右上方</option>
-                <option value="6">正右方</option>
-                <option value="7">右下方</option>
-            </select>
-        </span>
-        <script>
-        // 两个点已经可以确定一个直角三角形，已知对边和邻边，求出角度及斜边的长度，用css3属性旋转即可
-        drawLine = (start, end) => {
-            // 起点坐标
-            const startY = start.y;
-            const startX = start.x;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>两点连线</title>
+    <style>
+      .pointStart, .pointEnd {
+        position: absolute;
+      }
+      .line {
+        position: absolute;
+        width: 2px;
+        /* background: #000; */
+        background: linear-gradient(to bottom, #000 15px, transparent 0);
+        background-size: 100% 30px;
+        transform-origin: 0 0;
+        cursor: pointer;
+      }
+      .line::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: -3px;
+        display: block;
+        width: 8px;
+        height: 10px;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        background-color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <span>
+      <label>方向：</label>
+      <select id="direction">
+        <option value="0">正上方</option>
+        <option value="1">右上方偏左</option>
+        <option value="2">右上方</option>
+        <option value="3">右上方偏右</option>
+        <option value="4">正右方</option>
+        <option value="5">右下方偏右</option>
+        <option value="6">右下方</option>
+        <option value="7">右下方偏左</option>
+        <option value="8">正下方</option>
+        <option value="9">左下方偏右</option>
+        <option value="10">左下方</option>
+        <option value="11">左下方偏左</option>
+        <option value="12">正左方</option>
+        <option value="13">左上方偏左</option>
+        <option value="14">左上方</option>
+        <option value="15">左上方偏右</option>
+      </select>
+    </span>
+    <script>
+      // 两个点已经可以确定一个直角三角形，已知对边和邻边，求出角度【三角函数】及斜边的长度【勾股定律】，用css3属性旋转即可
+      drawLine = (start, end) => {
+        // 起点坐标
+        const startY = start.y;
+        const startX = start.x;
 
-            // 终点坐标
-            const endY = end.y;
-            const endX = end.x;
+        // 终点坐标
+        const endY = end.y;
+        const endX = end.x;
 
-            // 用勾股定律计算出斜边长度及其夹角（即连线的旋转角度）
-            // 以起点为零坐标，计算终点相对于起点的坐标值
-            const x = endX - startX;
-            const y = startY - endY;
+        // 以起点为零坐标，计算终点相对于起点的坐标值
+        const x = Math.abs(endX - startX);
+        const y = Math.abs(endY - startY);
 
-            // 连线长度
-            const length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            // 偏转角度
-            const angle = Math.atan2(y, x) * 180 / Math.PI; // atan2返回正X轴和点(x,y)之间以弧度（不是度）为单位的逆时针角度
-            // 角度转换
-            const deg = angle >= 0 ? 270 - angle : -(angle + 90);
-
-            const p1 = document.createElement('div');
-            p1.setAttribute('class', 'pointStart');
-            p1.setAttribute('style', `left: ${startX}px; top: ${startY}px;`);
-            document.body.appendChild(p1);
-
-            const p2 = document.createElement('div');
-            p2.setAttribute('class', 'pointEnd');
-            p2.setAttribute('style', `left: ${endX}px; top: ${endY}px;`);
-            document.body.appendChild(p2);
-
-            const line = document.createElement('div');
-            line.setAttribute('class', 'line');
-            line.setAttribute('style', `top: ${startY}px; left: ${startX}px; height: ${length}px; transform: rotate(${deg}deg)`);
-            document.body.appendChild(line);
+        // 连线长度
+        const length = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        // 偏转角度
+        const angle = Math.round(Math.atan(y / x) * 180 / Math.PI);
+        // 角度转换
+        // 终点y坐标在起点上边 旋转角度90+angle、终点y坐标在起点下边 旋转角度90-angle
+        let deg = endY < startY ? 90 + angle : 90 - angle;
+        // 终点x坐标在起点右边【逆时针旋转】
+        if (endX > startX) {
+          deg = -deg;
         }
-        const data = [
-            [{ x: 300, y: 300 }, { x: 300, y: 500 }], // 终点在起点正下方
-            [{ x: 300, y: 300 }, { x: 100, y: 500 }], // 终点在起点左下方
-            [{ x: 300, y: 300 }, { x: 100, y: 300 }], // 终点在起点正左方
-            [{ x: 300, y: 300 }, { x: 100, y: 100 }], // 终点在起点左上方
-            [{ x: 300, y: 300 }, { x: 300, y: 100 }], // 终点在起点正上方
-            [{ x: 300, y: 300 }, { x: 400, y: 100 }], // 终点在起点右上方
-            [{ x: 300, y: 300 }, { x: 500, y: 300 }], // 终点在起点正右方
-            [{ x: 300, y: 300 }, { x: 500, y: 500 }], // 终点在起点右下方
-        ];
-        drawLine(...data[0]);
-        document.getElementById('direction').addEventListener('change', (e) => {
-            document.body.removeChild(document.querySelector('.pointStart'));
-            document.body.removeChild(document.querySelector('.pointEnd'));
-            document.body.removeChild(document.querySelector('.line'));
-            drawLine(...data[e.target.value]); 
-        });
-        </script>
-    </body>
+
+        const p1 = document.createElement('div');
+        p1.setAttribute('class', 'pointStart');
+        p1.setAttribute('style', `left: ${startX}px; top: ${startY}px;`);
+        document.body.appendChild(p1);
+
+        const p2 = document.createElement('div');
+        p2.setAttribute('class', 'pointEnd');
+        p2.setAttribute('style', `left: ${endX}px; top: ${endY}px;`);
+        document.body.appendChild(p2);
+
+        const line = document.createElement('div');
+        line.setAttribute('class', 'line');
+        line.setAttribute('style', `top: ${startY}px; left: ${startX}px; height: ${length}px; transform: rotate(${deg}deg)`);
+        document.body.appendChild(line);
+      }
+      const data = [
+        [{ x: 300, y: 300 }, { x: 300, y: 100 }], // 终点在起点正上方
+        [{ x: 300, y: 300 }, { x: 400, y: 100 }], // 终点在起点右上方偏左
+        [{ x: 300, y: 300 }, { x: 500, y: 100 }], // 终点在起点右上方
+        [{ x: 300, y: 300 }, { x: 500, y: 200 }], // 终点在起点右上方偏右
+        [{ x: 300, y: 300 }, { x: 500, y: 300 }], // 终点在起点正右方
+        [{ x: 300, y: 300 }, { x: 500, y: 400 }], // 终点在起点右下方偏右
+        [{ x: 300, y: 300 }, { x: 500, y: 500 }], // 终点在起点右下方
+        [{ x: 300, y: 300 }, { x: 400, y: 500 }], // 终点在起点右下方偏左
+        [{ x: 300, y: 300 }, { x: 300, y: 500 }], // 终点在起点正下方
+        [{ x: 300, y: 300 }, { x: 200, y: 500 }],  // 终点在起点左下方偏右
+        [{ x: 300, y: 300 }, { x: 100, y: 500 }], // 终点在起点左下方
+        [{ x: 300, y: 300 }, { x: 100, y: 400 }], // 终点在起点左下方偏左
+        [{ x: 300, y: 300 }, { x: 100, y: 300 }], // 终点在起点正左方
+        [{ x: 300, y: 300 }, { x: 100, y: 200 }], // 终点在起点左上方偏左
+        [{ x: 300, y: 300 }, { x: 100, y: 100 }], // 终点在起点左上方
+        [{ x: 300, y: 300 }, { x: 200, y: 100 }], // 终点在起点左上方偏右
+      ];
+      drawLine(...data[0]);
+      document.getElementById('direction').addEventListener('change', (e) => {
+        document.body.removeChild(document.querySelector('.pointStart'));
+        document.body.removeChild(document.querySelector('.pointEnd'));
+        document.body.removeChild(document.querySelector('.line'));
+        drawLine(...data[e.target.value]);
+      });
+    </script>
+  </body>
 </html>
