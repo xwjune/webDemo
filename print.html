@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>打印</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+        @media print {
+            header,
+            aside,
+            .toolbar {
+                display: none;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: column; height: 100%;">
+        <header style="line-height: 40px; background: #000; color: #FFF;">导航栏</header>
+        <section style="flex: 1; display: flex;">
+            <aside style="width: 200px; background: #FFF;">侧边栏</aside>
+            <main style="padding: 10px; flex: 1; background: #F5F5F5;">
+                <div class="toolbar">
+                    <button onclick="onPrint()">打印</button>
+                    <button onclick="onPrint2()">打印2</button>
+                </div>
+                <div id="printDom" style="text-align: center;">
+                    <h1>望庐山瀑布</h1>
+                    <p>唐.李白</p>
+                    <p>
+                        <span>日照香炉生紫烟</span>
+                        <span>遥看瀑布挂前川</span>
+                    </p>
+                    <p>
+                        <span>飞流直下三千尺</span>
+                        <span>疑是银河落九天</span>
+                    </p>
+                </div>
+            </main>
+        </section>
+    </div>
+    <script>
+        function onPrint() {
+            window.print();
+        }
+        function onPrint2() {
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('style', 'visibility: hidden; height: 0; width: 0; border: 0;');
+            iframe.onload = () => {
+                const cloneNode = document.getElementById('printDom').cloneNode(true);
+                iframe.contentWindow.document.body.appendChild(cloneNode);
+                const contentWindow = iframe.contentWindow;
+                if (contentWindow) {
+                    contentWindow.print();
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    });
+                }
+            };
+            document.body.appendChild(iframe);
+        }
+    </script>
+  </body>
+</html>
