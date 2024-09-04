@@ -8,6 +8,9 @@
         height: 100%;
         margin: 0;
       }
+      #print {
+        text-align: center;
+      }
       @media print {
         header,
         aside,
@@ -27,7 +30,7 @@
             <button onclick="onPrint()">打印</button>
             <button onclick="onPrint2()">打印2</button>
           </div>
-          <div id="printDom" style="text-align: center">
+          <div id="print">
             <h1>望庐山瀑布</h1>
             <p>唐.李白</p>
             <p>
@@ -50,14 +53,26 @@
         const iframe = document.createElement('iframe');
         iframe.setAttribute('style', 'visibility: hidden; height: 0; width: 0; border: 0;');
         iframe.onload = () => {
-          const cloneNode = document.getElementById('printDom').cloneNode(true);
-          iframe.contentWindow.document.body.appendChild(cloneNode);
           const contentWindow = iframe.contentWindow;
           if (contentWindow) {
-            contentWindow.print();
-            setTimeout(() => {
+            // 设置打印内容
+            const cloneNode = document.getElementById('print').cloneNode(true);
+            contentWindow.document.body.appendChild(cloneNode);
+            // 设置打印样式
+            const styleStr = `
+              #print {
+                text-align: center;
+              }
+            `;
+            const style = document.createElement('style');
+            style.innerHTML = styleStr;
+            contentWindow.document.head.appendChild(style);
+            // 打印后事件处理
+            contentWindow.addEventListener('afterprint', () => {
               document.body.removeChild(iframe);
             });
+            // 打印
+            contentWindow.print();
           }
         };
         document.body.appendChild(iframe);
