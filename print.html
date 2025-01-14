@@ -49,6 +49,12 @@
       function onPrint() {
         window.print();
       }
+      function addCSSRule(document, css) {
+        const style = document.createElement('style');
+        style.setAttribute('type', 'text/css');
+        style.textContent = css; // 或者使用 style.innerHTML = css;
+        document.head.appendChild(style);
+      }
       function onPrint2() {
         const iframe = document.createElement('iframe');
         iframe.setAttribute('style', 'visibility: hidden; height: 0; width: 0; border: 0;');
@@ -59,14 +65,12 @@
             const cloneNode = document.getElementById('print').cloneNode(true);
             contentWindow.document.body.appendChild(cloneNode);
             // 设置打印样式
-            const styleStr = `
+            const css = `
               #print {
                 text-align: center;
               }
             `;
-            const style = document.createElement('style');
-            style.innerHTML = styleStr;
-            contentWindow.document.head.appendChild(style);
+            addCSSRule(contentWindow.document, css);
             // 打印后事件处理
             contentWindow.addEventListener('afterprint', () => {
               document.body.removeChild(iframe);
