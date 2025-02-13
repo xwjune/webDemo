@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>文字垂直居且溢出省略</title>
+    <style>
+      .container {
+        width: 100px;
+        height: 50px;
+        line-height: 50px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border: 1px solid #000;
+      }
+
+      .container2 {
+        display: flex;
+        align-items: center;
+        width: 100px;
+        height: 50px;
+        border: 1px solid #000;
+      }
+      
+      .container2 .text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .container3 {
+        display: grid;
+        place-items: center;
+        width: 100px;
+        height: 50px;
+        border: 1px solid #000;
+      }   
+
+      .container3 .text {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .container4 {
+        display: flex;
+        align-items: center;
+        width: 100px;
+        height: 50px;
+        border: 1px solid #000;
+      }   
+      
+      .container4 .text {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>使用行高和单行文本溢出处理</h1>
+    <div class="container">这是一段很长的文本，需要显示省略号。</div>
+    <br />
+    <div class="container">
+      <span>这是一段很长的文本，需要显示省略号。</span>
+    </div>
+
+    <h1>使用Flexbox</h1>
+    <div class="container2">
+      <span class="text">短文本</span>
+    </div>
+    <br />
+    <div class="container2">
+      <span class="text">这是一段很长的文本，需要显示省略号。</span>
+    </div>
+
+    <h1>使用Grid布局</h1>
+    <div class="container3">
+      <span class="text">这是一段很长的文本，需要显示省略号。</span>
+    </div>
+
+    <h1>多行文本溢出处理</h1>
+    <div class="container4">
+      <span class="text">这是一段很长的文本，需要显示省略号。</span>
+    </div>
+  </body>
+</html>
