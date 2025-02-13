@@ -1,0 +1,155 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>树节点快捷键操作【上下选择】</title>
+    <style>
+     	
+    </style>
+  </head>
+  <body>
+    <script>
+      const getTreeLinkData = (treeData) => {
+        // const map: Record<string, { next: string | undefined; prev: string | undefined }> = {};
+        const map = {};
+        // const loopFind = (list: any[], plist: { list: string[]; key: string | undefined }[]) => {
+        const loopFind = (list, plist) => {
+          list.forEach((x, idx) => {
+            const item = {
+              prev: undefined,
+              next: undefined,
+            };
+            // 向前索引
+            if (idx > 0) {
+              Object.assign(item, {
+                prev: list[idx - 1].key,
+              });
+            } else {
+              Object.assign(item, {
+                prev: plist.at(0)?.key,
+              });
+            }
+            // 向后索引
+            if (!!x.children?.length) {
+              // 子节点
+              Object.assign(item, {
+                next: x.children[0].key,
+              });
+            } else if (idx < list.length - 1) {
+              // 当前节点
+              Object.assign(item, {
+                next: list[idx + 1].key,
+              });
+            } else {
+              // 父节点
+              plist.some((y) => {
+                const pidx = y.list.findIndex((z) => z === y.key);
+                if (pidx !== -1 && pidx < y.list.length - 1) {
+                  Object.assign(item, {
+                    next: y.list[pidx + 1],
+                  });
+                  return true;
+                }
+                return false;
+              });
+            }
+
+            Object.assign(map, {
+              [x.key]: item,
+            });
+            if (!!x.children?.length) {
+              loopFind(x.children, [
+                {
+                  list: list.map((y) => y.key),
+                  key: x.key
+                },
+                ...plist,
+              ]);
+            }
+          });
+        };
+        loopFind(treeData ?? [], [{ list: [], key: undefined }]);
+        return map;
+      };
+
+      const getTreeMapData = (treeData) => {
+        const map = {};
+        const loop = (list) => {
+          list.forEach((item) => {
+            Object.assign(map, {
+              [item.key]: item.name,
+            });
+            if (!!item.children?.length) {
+              loop(item.children);
+            }
+          });
+        };
+        loop(treeData);
+        return map;
+      };
+
+      const treeData = [{
+        name: '中国',
+        key: '100000',
+        children: [
+          {
+            name: '北京市',
+            key: '110000',
+            children: [
+              {
+                name: '东城区',
+                key: '110101',
+              }, {
+                name: '朝阳区',
+                key: '110105',
+              },
+            ]
+          }, {
+            name: '江苏省',
+            key: '320000',
+            children: [
+              {
+                name: '南京市',
+                key: '320100',
+              },
+              {
+                name: '苏州市',
+                key: '320500',
+              }
+            ]
+          }, {
+            name: '浙江省',
+            key: '330000',
+            children: [
+              {
+                name: '杭州市',
+                key: '330100',
+              },
+              {
+                name: '宁波市',
+                key: '330200',
+              }
+            ]
+          }
+        ]
+      }];
+      const treeMap = getTreeMapData(treeData);
+      const treeLinkMap = getTreeLinkData(treeData);
+
+      let selectedKey = '100000';
+      document.addEventListener('keydown', (event) => {
+        let newSelectedKey;
+        if (event.key === 'ArrowUp') {
+          newSelectedKey = treeLinkMap[selectedKey].prev;
+        } else if (event.key === 'ArrowDown') {
+          newSelectedKey = treeLinkMap[selectedKey].next;
+        }
+        if (newSelectedKey) {
+          selectedKey = newSelectedKey;
+          console.log(treeMap[selectedKey]);
+        }
+      });
+      console.log(treeMap[selectedKey]);
+    </script>
+  </body>
+</html>
