@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>XMLHttpRequest文件下载</title>
+  </head>
+  <body>
+    <script>
+      // 文件下载
+      // const downloadByUrl = (url: string, fileName?: string) => {
+      const downloadByUrl = (url, fileName) => {
+        const link = document.createElement('a');
+        link.setAttribute('style', 'display: none');
+        link.setAttribute('href', url);
+        if (fileName) {
+          link.setAttribute('download', fileName);
+        }
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      // 二进制文件下载
+      // const downloadByBlod = (content: Blob | BlobPart[], fileName: string, type?: string) => {
+      const downloadByBlod = (content, fileName, type) => {
+        const blob = content instanceof Blob ? content : new Blob(content, { type });
+        const blobUrl = window.URL.createObjectURL(blob);
+        downloadByUrl(blobUrl, fileName);
+        window.URL.revokeObjectURL(blobUrl); // 释放内存
+      };
+
+      function download() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'url', true);
+        xhr.responseType = 'blob';
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              downloadByBlod(xhr.response, `${record.name}-${record.id}.zip`);
+            } else {
+              console.error(`下载失败: ${xhr.status} ${xhr.statusText}`);
+            }
+          }
+        };
+        xhr.onloadstart = () => {
+
+        };
+        xhr.onloadend = () => {
+        };
+        xhr.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            console.log(`下载进度: ${percent}%`);
+          } else {
+            console.log('Content length not reported.');
+          }
+        };
+        xhr.send();
+      }
+    </script>
+    <button onclick="download()">下载</button>
+  </body>
+</html>
