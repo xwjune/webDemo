@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>fetch文件下载</title>
+  </head>
+  <body>
+    <script>
+      // 文件下载
+      // const downloadByUrl = (url: string, fileName?: string) => {
+      const downloadByUrl = (url, fileName) => {
+        const link = document.createElement('a');
+        link.setAttribute('style', 'display: none');
+        link.setAttribute('href', url);
+        if (fileName) {
+          link.setAttribute('download', fileName);
+        }
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      // 二进制文件下载
+      // const downloadByBlod = (content: Blob | BlobPart[], fileName: string, type?: string) => {
+      const downloadByBlod = (content, fileName, type) => {
+        const blob = content instanceof Blob ? content : new Blob(content, { type });
+        const blobUrl = window.URL.createObjectURL(blob);
+        downloadByUrl(blobUrl, fileName);
+        window.URL.revokeObjectURL(blobUrl); // 释放内存
+      };
+
+      function download() {
+        fetch('url')
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`下载失败: ${res.status} ${res.statusText}`);
+          }
+          return res.blob();
+        })
+        .then((res) => {
+          downloadByBlod(res, 'fileName');
+        }).catch((error) => {
+          console.error(error.message);
+          // 可以在这里处理错误，例如显示错误消息
+        });
+      }
+    </script>
+    <button onclick="download()">下载</button>
+  </body>
+</html>
