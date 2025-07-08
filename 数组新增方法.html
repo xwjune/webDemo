@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>数组新增方法</title>
+  </head>
+  <body>
+    <script>
+	    if (!Array.prototype.at2) {
+        Array.prototype.at2 = function at(index) {
+          // 转换为整数
+          const idx = Math.trunc(Number(index)) || 0;
+          // 实际索引
+          const actualIndex = idx < 0 ? this.length + idx : idx;
+          // 返回实际索引对应的元素
+          return this[actualIndex];
+        };
+      }
+
+      const arr = [10, 20, 30, 40];
+      console.log(arr.at2());      // 10（默认索引 0）
+      console.log(arr.at2(0));     // 10
+      console.log(arr.at2(2));     // 30
+      console.log(arr.at2(-1));    // 40（倒数第一个）
+      console.log(arr.at2(-2));    // 30（倒数第二个）
+      console.log(arr.at2(5));     // undefined（超出范围）
+      console.log(arr.at2(-5));    // undefined（超出范围）
+      console.log(arr.at2('1'));   // 20（字符串转数字）
+      console.log(arr.at2(null));  // 10（null → 0）
+      console.log(arr.at2('a'));   // 10（无效数字 → 0）
+    </script>
+  </body>
+</html>
