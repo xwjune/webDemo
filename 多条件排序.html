@@ -17,8 +17,34 @@
         { name: '李四', age: 13, index: 8 },
         { name: '胖子', age: 30, index: 7 },
         { name: '李四', age: 13, index: 6 },
+        { name: '张三', age: 2, index: 9 },
       ];
-      function sort(data, sortList) {
+
+      function sort(data) {
+        // 若包函数字，可能存在bug，比如2、18，2排前面
+        data.sort((a, b) => {
+          const sortKey = `${a.name}-${a.age}`;
+          const sortKey2 = `${b.name}-${b.age}`;
+          return sortKey.localeCompare(sortKey2);
+        });
+      }
+
+      function sort2(data) {
+        data.sort((a, b) => {
+          if (a.name !== b.name) {
+            return a.name.localeCompare(b.name);
+          }
+          if (a.age !== b.age) {
+            return a.age - b.age;
+          }
+          if (a.index !== b.index) {
+            return a.index - b.index;
+          }
+          return 0;
+        });
+      }
+
+      function sort3(data, sortList) {
         data.sort((a, b) => {
           for (i = 0; i < sortList.length; i++) {
             if (a[sortList[i]] !== b[sortList[i]]) {
@@ -28,23 +54,21 @@
               return a[sortList[i]] - b[sortList[i]];
             }
           }
+          return 0;
         });
       }
-      const data = [...dataSource];
-      sort(data, ['name', 'age', 'index']);
+
+      const data = dataSource.map((x) => ({ ... x}));
+      sort(data);
       console.log(data);
-    </script>
-    <script>
-      function sort2(data) {
-        data.sort((a, b) => {
-          const sortKey = `${a.name}-${a.age}`;
-          const sortKey2 = `${b.name}-${b.age}`;
-          return sortKey.localeCompare(sortKey2);
-        });
-      }
-      const data2 = [...dataSource];
+
+      const data2 = dataSource.map((x) => ({ ... x}));
       sort2(data2);
       console.log(data2);
+
+      const data3 = dataSource.map((x) => ({ ... x}));
+      sort3(data3, ['name', 'age', 'index']);
+      console.log(data3);
     </script>
   </body>
 </html>
