@@ -21,10 +21,10 @@
       ];
 
       function sort(data) {
-        // 若包函数字，可能存在bug，比如2、18，2排前面
+        // 若包含数字，可能存在bug，比如2、18，2排前面
         data.sort((a, b) => {
-          const sortKey = `${a.name}-${a.age}`;
-          const sortKey2 = `${b.name}-${b.age}`;
+          const sortKey = `${a.name}-${a.age}-${a.index}`;
+          const sortKey2 = `${b.name}-${b.age}-${a.index}`;
           return sortKey.localeCompare(sortKey2);
         });
       }
