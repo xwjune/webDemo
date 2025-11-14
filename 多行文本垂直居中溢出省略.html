@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>多行文本垂直居中溢出省略</title>
+    <style>
+      .box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 90px;
+        line-height: 30px;
+        overflow: hidden;
+        border: 1px solid red;
+      }
+      .txt {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="txt">
+        日照香炉生紫烟，遥看瀑布挂前川，飞流直下三千尺，疑是银河落九天
+      </div>
+    </div>
+    <div class="box">
+      <div class="txt">
+        飞流直下三千尺
+      </div>
+    </div>
+    <div class="box">
+      <div class="txt">
+        飞
+      </div>
+    </div>
+
+    <script>
+    </script>
+  </body>
+</html>
