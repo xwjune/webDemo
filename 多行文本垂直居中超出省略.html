@@ -2,7 +2,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <title>多行文本垂直居中溢出省略</title>
+    <title>多行文本垂直居中超出省略</title>
     <style>
       .box {
         display: flex;
@@ -11,13 +11,14 @@
         width: 100px;
         height: 90px;
         line-height: 30px;
-        overflow: hidden;
         border: 1px solid red;
       }
+
       .txt {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
+        overflow: hidden;
       }
     </style>
   </head>
@@ -37,8 +38,5 @@
         飞
       </div>
     </div>
-
-    <script>
-    </script>
   </body>
 </html>
