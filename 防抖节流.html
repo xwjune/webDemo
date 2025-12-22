@@ -1,0 +1,94 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>防抖节流</title>
+    <style>
+      .box {
+        border: 1px solid red;
+        height: 500px;
+        overflow: auto;
+      }
+      .box div {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div>11111</div>
+      <div>22222</div>
+      <div>33333</div>
+      <div>44444</div>
+    </div>
+    <script>
+      function debounce(func, delay) {
+        let timeout;
+        return function() {
+          const context = this;
+          const args = arguments;
+          clearTimeout(timeout);
+          timeout = setTimeout(function() {
+            func.apply(context, args);
+          }, delay);
+        };
+      }
+
+      function throttle(func, delay) {
+        let timeout = null;
+        return function() {
+          const context = this;
+          const args = arguments;
+          if (timeout) return;
+          timeout = setTimeout(function() {
+            func.apply(context, args);
+            timeout = null;
+          }, delay);
+        };
+      }
+
+      function throttle2(func, delay) {
+        let prev = Date.now();
+        return function() {
+          const context = this;
+          const args = arguments;
+          let now = Date.now();  
+          if (now - prev >= delay) { 
+            prev = now; 
+            func.apply(context, args);                                   
+          }  
+        };
+      }
+
+      // 用时间戳+定时器，当第一次触发事件时马上执行事件处理函数，最后一次触发事件后也还会执行一次事件处理函数。
+      function throttle3(fn, delay) {     
+        let timer = null;     
+        let startTime = Date.now();     
+        return function() {
+          const context = this;             
+          const args = arguments;  
+          const curTime = Date.now();             
+          const remaining = delay - (curTime - startTime);
+          
+          if(timer) clearTimeout(timer);     
+          
+          function handleAndRest() {
+            startTime = Date.now();        
+            timer = null
+            fn.apply(context, args);
+          }
+          if(remaining <= 0) {
+            handleAndRest();
+          } else {                    
+            timer = setTimeout(handleAndRest, remaining);              
+          }      
+        }
+      }
+
+      // 使用示例
+      document.querySelector('.box').addEventListener('scroll', throttle3(function(e) {
+        console.log(`滚动条位置：${e.target.scrollTop}`,  new Date().toLocaleTimeString());
+      }, 3000));
+    </script>
+  </body>
+</html>
