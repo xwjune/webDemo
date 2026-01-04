@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>颜色分段填充</title>
+    <style>
+      div {
+        height: 100px;
+        width: 300px;
+      }
+      #div {
+        background: linear-gradient(to right, #EBA6ED 0%, #EBA6ED 40%, #D2E6FF 40%, #D2E6FF 100%);
+      }
+      #div2 {
+        background: linear-gradient(to right, #EBA6ED 40%, #D2E6FF 0);
+        /* background: linear-gradient(90deg, #EBA6ED 40%, #D2E6FF 0); */
+      }
+      #div3 {
+        background: #D2E6FF;
+      }
+      #div3 div {
+        background: #EBA6ED;
+        clip-path: polygon(0 0, 40% 0, 40% 100%, 0 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <p>canvas</p>
+    <canvas id="myCanvas"></canvas>
+    <p>canvas</p>
+    <canvas id="myCanvas2"></canvas>
+    <p>div（linear-gradient）</p>
+    <div id="div"></div>
+    <p>div（linear-gradient）</p>
+    <div id="div2"></div>
+    <p>div（clip-path）</p>
+    <div id="div3"><div></div></div>
+    <script>
+      function drawSegmentedColors(ctx, width, height, percent) {
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+        const gradient = ctx.createLinearGradient(0, 0, width, 0);
+        gradient.addColorStop(0, '#EBA6ED');
+        gradient.addColorStop(percent, '#EBA6ED');
+        gradient.addColorStop(percent, '#D2E6FF');
+        gradient.addColorStop(1, '#D2E6FF');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      function drawSegmentedColors2(ctx, width, height, percent) {
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+        const segments = [
+          { color: '#EBA6ED', x: 0, y: 0, width: width * percent, height },
+          { color: '#D2E6FF', x: width * percent, y: 0, width: width - width * percent, height },
+        ];
+        // 绘制每个颜色段
+        segments.forEach(segment => {
+          ctx.fillStyle = segment.color;
+          ctx.fillRect(segment.x, segment.y, segment.width, segment.height);
+        });
+      }
+
+      const canvas = document.getElementById('myCanvas');
+      const ctx = canvas.getContext('2d');
+      drawSegmentedColors(ctx, 300, 100, 0.4);
+
+      const canvas2 = document.getElementById('myCanvas2');
+      const ctx2 = canvas2.getContext('2d');
+      drawSegmentedColors2(ctx2, 300, 100, 0.4);
+    </script>
+  </body>
+</html>
