@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>循环搜索</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      .result-card {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-width: 300px;
+      }
+      button {
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+      input {
+        padding: 8px;
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="输入关键词搜索..."
+        value="王"
+      />
+      <button id="searchBtn">搜索</button>
+      <button id="freshBtn">刷新数据源</button>
+    </div>
+    <div id="resultContainer" class="result-card">等待搜索...</div>
+
+    <script>
+      /**
+       * 核心交互流程：输入关键词 → 搜索（首次真实匹配 / 再次点击走缓存切换下一条）→ 更新详情
+       */
+      // 数据池 —— 模拟后端全量人员数据，刷新数据源时从中随机抽取子集
+      const DATA_POOL = [
+        { id: 1001, name: '张伟', department: '技术部', position: '前端工程师', email: 'zhangwei@company.com' },
+        { id: 1002, name: '李娜', department: '设计部', position: 'UI设计师', email: 'lina@company.com' },
+        { id: 1003, name: '王强', department: '技术部', position: '后端工程师', email: 'wangqiang@company.com' },
+        { id: 1004, name: '赵敏', department: '产品部', position: '产品经理', email: 'zhaomin@company.com' },
+        { id: 1005, name: '刘洋', department: '技术部', position: '全栈工程师', email: 'liuyang@company.com' },
+        { id: 1006, name: '陈静', department: '人事部', position: 'HR经理', email: 'chenjing@company.com' },
+        { id: 1007, name: '张明', department: '财务部', position: '财务主管', email: 'zhangming@company.com' },
+        { id: 1008, name: '李华', department: '技术部', position: '架构师', email: 'lihua@company.com' },
+        { id: 1009, name: '王芳', department: '设计部', position: '交互设计师', email: 'wangfang@company.com' },
+        { id: 1010, name: '赵磊', department: '运营部', position: '运营总监', email: 'zhaolei@company.com' },
+        { id: 1011, name: '孙悦', department: '技术部', position: '测试工程师', email: 'sunyue@company.com' },
+        { id: 1012, name: '周杰', department: '技术部', position: '前端工程师', email: 'zhoujie@company.com' },
+        { id: 1013, name: '吴婷', department: '市场部', position: '市场专员', email: 'wuting@company.com' },
+        { id: 1014, name: '郑伟', department: '技术部', position: '运维工程师', email: 'zhengwei@company.com' },
+        { id: 1015, name: '朱琳', department: '产品部', position: '产品助理', email: 'zhulin@company.com' },
+        { id: 1016, name: '何磊', department: '技术部', position: '数据分析师', email: 'helei@company.com' },
+        { id: 1017, name: '高峰', department: '销售部', position: '销售经理', email: 'gaofeng@company.com' },
+        { id: 1018, name: '罗敏', department: '行政部', position: '行政主管', email: 'luomin@company.com' },
+        { id: 1019, name: '谢娟', department: '财务部', position: '会计', email: 'xiejuan@company.com' },
+        { id: 1020, name: '韩涛', department: '技术部', position: '安全工程师', email: 'hantao@company.com' }
+      ];
+      // 数据源
+      let dataSource = null;
+      // 数据指纹
+      let dataStamp = 0;
+      // 搜索状态
+      let searchState = {
+        keyword: null, // 关键词
+        dataStamp: null, // 数据指纹（用于检测数据源变化）
+        currentIndex: 0, // 当前展示的是第几个匹配项（索引）
+        results: [], // 搜索结果
+      };
+
+      /**
+       * 工具函数：从数组中随机抽取指定数量的元素
+       */
+      function getRandomSubset(data, count) {
+        const shuffled = [...data].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      /**
+       * 检查缓存是否有效：关键词、数据版本相同
+       */
+      function isCacheValid(keyword) {
+        return (
+          searchState.keyword === keyword && searchState.dataStamp === dataStamp
+        );
+      }
+
+      /**
+       * 循环搜索
+       */
+      function searchAndNext() {
+        const inputEl = document.getElementById("searchInput");
+        const keyword = inputEl.value.trim().toUpperCase();
+
+        // 情况 A: 没有关键词
+        if (!keyword) {
+          return { results: [] };
+        }
+
+        // 情况 B: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
+        if (isCacheValid(keyword)) {
+          if (searchState.results.length > 0) {
+            // 循环索引逻辑 (取模运算)：如果 currentIndex 超过了数组长度，自动回到 0
+            searchState.currentIndex =
+              (searchState.currentIndex + 1) % searchState.results.length;
+          }
+          return { results: searchState.results };
+        }
+
+        // 情况 C: 关键词变了 或者 数据源变了  -> 需要重新过滤
+
+        // 1. 重新执行过滤
+        const results = (dataSource ?? []).filter(
+          (item) =>
+            item.name.includes(keyword) ||
+            item.department.includes(keyword) ||
+            item.position.includes(keyword),
+        );
+
+        // 2. 更新搜索状态
+        searchState = {
+          keyword,
+          dataStamp,
+          currentIndex: 0, // 新搜索从第 0 个开始
+          results,
+        };
+
+        return { results };
+      }
+
+      /**
+       * 展示搜索结果
+       */
+      function showResult(results) {
+        const resultEl = document.getElementById("resultContainer");
+        const { currentIndex } = searchState;
+
+        // 如果匹配结果为空
+        if (results.length === 0) {
+          resultEl.innerHTML = "没有找到匹配的数据";
+          return;
+        }
+
+        const currentItem = results[currentIndex];
+        // 更新 UI
+        resultEl.innerHTML = `
+            <h3>匹配结果 (${currentIndex + 1} / ${results.length})</h3>
+            <p><strong>姓名:</strong> ${currentItem.name}</p >
+            <p><strong>部门:</strong> ${currentItem.department}</p >
+            <p><strong>职位:</strong> ${currentItem.position}</p >
+        `;
+      }
+
+      /**
+       * 搜索
+       */
+      function handleSearch() {
+        const { results } = searchAndNext();
+        // 展示搜索结果
+        showResult(results);
+      }
+
+      /**
+       * 刷新数据源
+       */
+      function handleFresh() {
+        // 随机抽取 15 条数据作为当前数据源
+        dataSource = getRandomSubset(DATA_POOL, 15);
+        dataStamp = Date.now();
+      }
+
+      /**
+       * 初始化
+       */
+      document.addEventListener("DOMContentLoaded", () => {
+        handleFresh();
+        // 绑定事件
+        document
+          .getElementById("searchBtn")
+          .addEventListener("click", handleSearch);
+        document
+          .getElementById("freshBtn")
+          .addEventListener("click", handleFresh);
+      });
+    </script>
+  </body>
+</html>

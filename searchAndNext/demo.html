@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人员搜索</title>
+  <style>
+    /* ==================== 设计令牌 ==================== */
+    /* 暗色主题配色系统：以深蓝黑为底，翠绿(#10b981)为强调色 */
+    :root {
+      --bg: #0a0f1a;              /* 页面主背景 */
+      --bg-secondary: #111827;    /* 卡片头部/表头背景 */
+      --fg: #e8eaed;              /* 主文字颜色 */
+      --muted: #6b7280;           /* 次要文字（标签、描述） */
+      --accent: #10b981;          /* 强调色，用于按钮/高亮/选中态 */
+      --accent-glow: rgba(16, 185, 129, 0.3); /* 强调色光晕，用于 focus/hover 阴影 */
+      --card: #1a2234;            /* 卡片背景 */
+      --border: #2d3748;          /* 通用边框色 */
+      --highlight-bg: rgba(16, 185, 129, 0.15); /* 搜索匹配行的高亮背景 */
+      --highlight-border: var(--accent);         /* 搜索匹配行的边框色 */
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      color: var(--fg);
+      min-height: 100vh;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ==================== 布局 ==================== */
+    /* 单列布局（移动端） → 左右分栏布局（≥1024px） */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr; /* 移动端单列 */
+      gap: 2rem;
+    }
+    @media (min-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 400px 1fr; /* 左侧搜索面板 400px，右侧数据列表自适应 */
+      }
+    }
+
+    /* ==================== 页头 ==================== */
+    /* 移动端纵向排列标题和操作按钮，平板以上横向排列 */
+    .header {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+    .header h1 {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+    @media (min-width: 768px) {
+      .header h1 {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+      }
+    }
+    .header-desc {
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* ==================== 通用组件样式 ==================== */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+    }
+
+    .input-field {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .input-field:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    /* Left Panel */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Search Card */
+    .search-card { padding: 1.25rem; }
+    .search-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .search-row .input-field {
+      flex: 1;
+      padding: 0.625rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--fg);
+    }
+    .search-row .btn-primary {
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+    .status-area {
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+    .status-text { color: var(--muted); }
+    .status-badges { display: flex; gap: 0.5rem; }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .badge-accent {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-warn {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .hidden { display: none; }
+
+    /* ==================== 详情卡片 ==================== */
+    /* 未选中时缩小半透明，选中后恢复，形成视觉焦点切换效果 */
+    .detail-card {
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .detail-card.inactive {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+    .detail-header {
+      background: var(--bg-secondary);
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .detail-header h3 {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .match-badge {
+      font-size: 0.75rem;
+      background: var(--accent);
+      color: white;
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+    .detail-body { padding: 1.25rem; }
+    .detail-profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .detail-avatar {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(to bottom right, var(--accent), #047857);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .detail-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .detail-email {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      font-size: 0.875rem;
+    }
+    .detail-field {
+      background: var(--bg);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+    }
+    .detail-field-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    .detail-field-value { font-weight: 500; }
+
+    /* ==================== 右侧数据列表 ==================== */
+    /* 表头 sticky 固定，表格区域最大高度 600px 内滚动 */
+    .list-card { overflow: hidden; }
+    .list-header {
+      background: var(--bg-secondary);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .list-header h3 { font-weight: 500; }
+    .list-count {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .data-table-container {
+      max-height: 600px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .data-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-secondary);
+      z-index: 10;
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 500;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(45, 55, 72, 0.5);
+      transition: background 0.2s;
+    }
+
+    .data-table tr {
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .data-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .row-index {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      line-height: 1.5rem;
+      border-radius: 0.25rem;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    /* ==================== 搜索匹配高亮行 ==================== */
+    /* 当搜索命中某条记录时，该行获得绿色高亮背景和边框 */
+    .row-highlight {
+      background: var(--highlight-bg) !important;
+      box-shadow: inset 0 0 0 1px var(--highlight-border);
+    }
+    .row-highlight td { color: var(--accent); }
+    .row-highlight .row-index {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .td-name { font-weight: 500; }
+    .td-muted { color: var(--muted); }
+    .td-center { text-align: center; }
+
+    /* ==================== 入场动画 ==================== */
+    /* 页面元素依次从下方滑入，通过 animation-delay 实现错落效果 */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in {
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* ==================== Toast 提示 ==================== */
+    /* 固定在底部居中，默认透明不可见，添加 .show 类后淡入 */
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Update Button */
+    .btn-update {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header animate-in">
+      <div>
+        <h1>人员搜索系统</h1>
+        <p class="header-desc">总数据池 20 条 · 当前加载 15 条</p>
+      </div>
+      <div class="header-actions">
+        <button id="updateDataBtn" class="btn-ghost btn-update">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+          </svg>
+          刷新数据源
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-grid">
+      <!-- Left Panel: Search & Detail -->
+      <div class="left-panel animate-in" style="animation-delay: 100ms;">
+
+        <!-- Search Card -->
+        <div class="card search-card">
+          <div class="search-row">
+            <input type="text" id="searchInput" class="input-field" placeholder="输入关键词搜索...">
+            <button id="searchBtn" class="btn-primary">搜索</button>
+          </div>
+
+          <!-- Status Area -->
+          <div class="status-area">
+            <span id="statusText" class="status-text">准备就绪</span>
+            <div class="status-badges">
+              <span id="cacheBadge" class="badge badge-warn hidden">命中缓存</span>
+              <span id="updateBadge" class="badge badge-accent hidden">数据已刷新</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Detail Card -->
+        <div id="detailCard" class="card detail-card inactive">
+          <div class="detail-header">
+            <h3>当前匹配详情</h3>
+            <span id="matchIndex" class="match-badge">-/</span>
+          </div>
+          <div class="detail-body">
+            <div class="detail-profile">
+              <div id="detailAvatar" class="detail-avatar"></div>
+              <div>
+                <div id="detailName" class="detail-name"></div>
+                <div id="detailEmail" class="detail-email"></div>
+              </div>
+            </div>
+            <div class="detail-grid">
+              <div class="detail-field">
+                <span class="detail-field-label">部门</span>
+                <span id="detailDept" class="detail-field-value"></span>
+              </div>
+              <div class="detail-field">
+                <span class="detail-field-label">职位</span>
+                <span id="detailPos" class="detail-field-value"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel: Data List -->
+      <div class="card list-card animate-in" style="animation-delay: 200ms;">
+        <div class="list-header">
+          <h3>当前数据列表</h3>
+          <span id="listCount" class="list-count">15 条记录</span>
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>姓名</th>
+                <th>部门</th>
+                <th>职位</th>
+              </tr>
+            </thead>
+            <tbody id="dataListBody">
+              <!-- Rows injected here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <span id="toastMsg"></span>
+  </div>
+
+  <script>
+    /**
+     * 应用架构概览：
+     * - DATA_POOL: 模拟后端全量数据（20 条）
+     * - SearchEngine:     搜索引擎，负责关键词匹配与缓存管理
+     * - UIController:     UI 控制器，负责 DOM 操作与事件绑定
+     *
+     * 核心交互流程：输入关键词 → 搜索（首次真实匹配 / 再次点击走缓存切换下一条）→ 更新详情 + 高亮列表行
+     */
+
+    // 1. 数据池 —— 模拟后端全量人员数据，刷新数据源时从中随机抽取子集
+    const DATA_POOL = [
+      { id: 1001, name: '张伟', department: '技术部', position: '前端工程师', email: 'zhangwei@company.com' },
+      { id: 1002, name: '李娜', department: '设计部', position: 'UI设计师', email: 'lina@company.com' },
+      { id: 1003, name: '王强', department: '技术部', position: '后端工程师', email: 'wangqiang@company.com' },
+      { id: 1004, name: '赵敏', department: '产品部', position: '产品经理', email: 'zhaomin@company.com' },
+      { id: 1005, name: '刘洋', department: '技术部', position: '全栈工程师', email: 'liuyang@company.com' },
+      { id: 1006, name: '陈静', department: '人事部', position: 'HR经理', email: 'chenjing@company.com' },
+      { id: 1007, name: '张明', department: '财务部', position: '财务主管', email: 'zhangming@company.com' },
+      { id: 1008, name: '李华', department: '技术部', position: '架构师', email: 'lihua@company.com' },
+      { id: 1009, name: '王芳', department: '设计部', position: '交互设计师', email: 'wangfang@company.com' },
+      { id: 1010, name: '赵磊', department: '运营部', position: '运营总监', email: 'zhaolei@company.com' },
+      { id: 1011, name: '孙悦', department: '技术部', position: '测试工程师', email: 'sunyue@company.com' },
+      { id: 1012, name: '周杰', department: '技术部', position: '前端工程师', email: 'zhoujie@company.com' },
+      { id: 1013, name: '吴婷', department: '市场部', position: '市场专员', email: 'wuting@company.com' },
+      { id: 1014, name: '郑伟', department: '技术部', position: '运维工程师', email: 'zhengwei@company.com' },
+      { id: 1015, name: '朱琳', department: '产品部', position: '产品助理', email: 'zhulin@company.com' },
+      { id: 1016, name: '何磊', department: '技术部', position: '数据分析师', email: 'helei@company.com' },
+      { id: 1017, name: '高峰', department: '销售部', position: '销售经理', email: 'gaofeng@company.com' },
+      { id: 1018, name: '罗敏', department: '行政部', position: '行政主管', email: 'luomin@company.com' },
+      { id: 1019, name: '谢娟', department: '财务部', position: '会计', email: 'xiejuan@company.com' },
+      { id: 1020, name: '韩涛', department: '技术部', position: '安全工程师', email: 'hantao@company.com' }
+    ];
+
+    // 2. 工具函数：从数组中随机抽取指定数量的元素（Fisher-Yates 变体）
+    function getRandomSubset(data, count) {
+      const shuffled = [...data].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    /**
+     * 3. 搜索引擎类
+     * 职责：关键词模糊匹配 + 搜索结果缓存
+     *
+     * 缓存策略（dataStamp 机制）：
+     * - 每次刷新数据源时 dataStamp 更新，旧缓存自动失效
+     * - 同一关键词 + 同一数据版本下，重复搜索直接返回缓存并轮转 currentIndex
+     * - 用户再次点击"搜索"时，自动切换到下一条匹配结果（循环轮转）
+     */
+    class SearchEngine {
+      constructor(data) {
+        this.data = data;
+        this.dataStamp = Date.now();
+        this.cache = {
+          keyword: null, // 关键词
+          dataStamp: null, // 数据指纹
+          currentIndex: 0, // 索引
+          results: [], // 搜索结果
+        };
+      }
+
+      updateData(newData) {
+        this.data = newData;
+        this.dataStamp = Date.now();
+      }
+
+      // 检查缓存是否有效：关键词、数据版本相同
+      isCacheValid(keyword) {
+        return this.cache.keyword === keyword && this.cache.dataStamp === this.dataStamp;
+      }
+
+      // 搜索方法
+      search(keyword) {
+        const trimmedKeyword = keyword.trim().toLowerCase();
+
+        // 情况 A: 没有关键词
+        if (!trimmedKeyword) return { results: [], fromCache: false };
+
+        // 情况 B: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
+        if (this.isCacheValid(trimmedKeyword)) {
+          // 循环索引逻辑 (取模运算)：如果 currentIndex 超过了数组长度，自动回到 0
+          if (this.cache.results.length > 0) {
+            this.cache.currentIndex = (this.cache.currentIndex + 1) % this.cache.results.length;
+          }
+          return {
+            results: this.cache.results,
+            currentIndex: this.cache.currentIndex,
+            fromCache: true,
+          };
+        }
+
+        // 情况 C: 关键词变了 或者 数据源变了  -> 需要重新过滤
+
+        // 1. 重新执行过滤
+        const results = this.data.filter(p =>
+          p.name.toLowerCase().includes(trimmedKeyword) ||
+          p.department.toLowerCase().includes(trimmedKeyword) ||
+          p.position.toLowerCase().includes(trimmedKeyword)
+        );
+
+        // 2. 更新缓存
+        this.cache = {
+          keyword: trimmedKeyword,
+          dataStamp: this.dataStamp,
+          currentIndex: 0, // 新搜索从第 0 个开始
+          results,
+        };
+
+        return {
+          results,
+          currentIndex: 0,
+          fromCache: false,
+        };
+      }
+    }
+
+    /**
+     * 4. UI 控制器
+     * 职责：DOM 元素缓存、事件绑定、搜索/刷新交互处理、列表渲染、Toast 提示
+     * 与 SearchEngine 解耦，通过 engine 实例访问数据和搜索能力
+     */
+    class UIController {
+      constructor(engine) {
+        this.engine = engine;
+        this.el = {};
+        this.cacheElements();
+        this.bindEvents();
+        this.renderList();
+      }
+
+      /** 批量缓存 DOM 引用，避免重复查询 */
+      cacheElements() {
+        const ids = ['searchInput', 'searchBtn', 'updateDataBtn', 'statusText', 'cacheBadge', 'updateBadge',
+                     'detailCard', 'detailAvatar', 'detailName', 'detailEmail', 'detailDept', 'detailPos', 'matchIndex',
+                     'dataListBody', 'listCount', 'toast', 'toastMsg'];
+        ids.forEach(id => this.el[id] = document.getElementById(id));
+      }
+
+      bindEvents() {
+        // 搜索按钮点击
+        this.el.searchBtn.addEventListener('click', () => this.handleSearch());
+        // 回车键搜索
+        this.el.searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            this.handleSearch();
+          }
+        });
+        // 刷新数据源
+        this.el.updateDataBtn.addEventListener('click', () => this.handleUpdate());
+      }
+
+      /** 刷新数据源：从总池中重新随机抽取 15 条，重置搜索状态 */
+      handleUpdate() {
+        const newData = getRandomSubset(DATA_POOL, 15);
+        this.engine.updateData(newData);
+
+        this.el.detailCard.classList.add('inactive');
+        this.el.updateBadge.classList.remove('hidden');
+        this.el.cacheBadge.classList.add('hidden');
+        this.el.statusText.textContent = "数据已刷新，请重新搜索";
+
+        this.renderList();
+        this.toast('数据源已更新');
+      }
+
+      /** 处理搜索：调用引擎搜索，更新状态栏、详情卡片和列表高亮 */
+      handleSearch() {
+        const keyword = this.el.searchInput.value;
+        const { results, fromCache, currentIndex } = this.engine.search(keyword);
+
+        this.el.cacheBadge.classList.toggle('hidden', !fromCache);
+        this.el.updateBadge.classList.add('hidden');
+
+        // 如果匹配结果为空
+        if (results.length === 0) {
+          this.el.statusText.textContent = "未找到匹配结果";
+          this.clearDetail();
+          this.renderList();
+          return;
+        }
+
+        const currentPerson = results[currentIndex];
+        this.el.statusText.textContent = `找到 ${results.length} 条结果 (第 ${currentIndex + 1} 条)`;
+
+        this.updateDetail(currentPerson, currentIndex + 1, results.length);
+        this.renderList(currentPerson.id);
+      }
+
+      /** 清空详情面板（无搜索结果时调用） */
+      clearDetail() {
+        this.el.detailCard.classList.add('inactive');
+        this.el.detailAvatar.textContent = '';
+        this.el.detailName.textContent = '';
+        this.el.detailEmail.textContent = '';
+        this.el.detailDept.textContent = '';
+        this.el.detailPos.textContent = '';
+        this.el.matchIndex.textContent = '-/';
+      }
+
+      /** 将匹配的人员信息填充到详情卡片中 */
+      updateDetail(person, index, total) {
+        this.el.detailCard.classList.remove('inactive');
+        this.el.detailAvatar.textContent = person.name.charAt(0);
+        this.el.detailName.textContent = person.name;
+        this.el.detailEmail.textContent = person.email;
+        this.el.detailDept.textContent = person.department;
+        this.el.detailPos.textContent = person.position;
+        this.el.matchIndex.textContent = `${index}/${total}`;
+      }
+
+      /**
+       * 渲染数据列表
+       * @param {number|null} highlightId - 需要高亮的行对应的 person.id，为 null 时不高亮任何行
+       */
+      renderList(highlightId = null) {
+        const data = this.engine.data;
+        this.el.listCount.textContent = `${data.length} 条记录`;
+
+        this.el.dataListBody.innerHTML = data.map((p, i) => `
+          <tr data-id="${p.id}" class="${p.id === highlightId ? 'row-highlight' : ''}">
+            <td class="td-center">
+              <span class="row-index">${i + 1}</span>
+            </td>
+            <td class="td-name">${p.name}</td>
+            <td class="td-muted">${p.department}</td>
+            <td class="td-muted">${p.position}</td>
+          </tr>
+        `).join('');
+
+        if (highlightId) {
+          requestAnimationFrame(() => {
+            const targetRow = this.el.dataListBody.querySelector(`tr[data-id="${highlightId}"]`);
+            if (targetRow) {
+              targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        }
+      }
+
+      /** 显示底部 Toast 提示，2 秒后自动消失 */
+      toast(msg) {
+        this.el.toastMsg.textContent = msg;
+        this.el.toast.classList.add('show');
+        setTimeout(() => this.el.toast.classList.remove('show'), 2000);
+      }
+    }
+
+    // 5. 初始化：页面加载后随机抽取 15 条数据作为初始数据源
+    document.addEventListener('DOMContentLoaded', () => {
+      const initialData = getRandomSubset(DATA_POOL, 15);
+      const engine = new SearchEngine(initialData);
+      new UIController(engine);
+    });
+  </script>
+</body>
+</html>
