@@ -572,11 +572,7 @@
       // 搜索方法
       search(keyword) {
         const trimmedKeyword = keyword.trim().toLowerCase();
-
-        // 情况 A: 没有关键词
-        if (!trimmedKeyword) return { results: [], fromCache: false };
-
-        // 情况 B: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
+        // 情况 A: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
         if (this.isCacheValid(trimmedKeyword)) {
           // 循环索引逻辑 (取模运算)：如果 currentIndex 超过了数组长度，自动回到 0
           if (this.cache.results.length > 0) {
@@ -589,7 +585,7 @@
           };
         }
 
-        // 情况 C: 关键词变了 或者 数据源变了  -> 需要重新过滤
+        // 情况 B: 关键词变了 或者 数据源变了  -> 需要重新过滤
 
         // 1. 重新执行过滤
         const results = this.data.filter(p =>
@@ -666,6 +662,10 @@
       /** 处理搜索：调用引擎搜索，更新状态栏、详情卡片和列表高亮 */
       handleSearch() {
         const keyword = this.el.searchInput.value;
+        if (!keyword) {
+          alert('请输入关键词');
+          return;
+        }
         const { results, fromCache, currentIndex } = this.engine.search(keyword);
 
         this.el.cacheBadge.classList.toggle('hidden', !fromCache);

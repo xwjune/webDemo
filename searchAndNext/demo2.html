@@ -31,7 +31,6 @@
         type="text"
         id="searchInput"
         placeholder="输入关键词搜索..."
-        value="王"
       />
       <button id="searchBtn">搜索</button>
       <button id="freshBtn">刷新数据源</button>
@@ -97,16 +96,8 @@
       /**
        * 循环搜索
        */
-      function searchAndNext() {
-        const inputEl = document.getElementById("searchInput");
-        const keyword = inputEl.value.trim().toUpperCase();
-
-        // 情况 A: 没有关键词
-        if (!keyword) {
-          return { results: [] };
-        }
-
-        // 情况 B: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
+      function searchAndNext(keyword) {
+        // 情况 A: 关键词没变 且 数据源没变  -> 使用缓存，移动索引
         if (isCacheValid(keyword)) {
           if (searchState.results.length > 0) {
             // 循环索引逻辑 (取模运算)：如果 currentIndex 超过了数组长度，自动回到 0
@@ -116,7 +107,7 @@
           return { results: searchState.results };
         }
 
-        // 情况 C: 关键词变了 或者 数据源变了  -> 需要重新过滤
+        // 情况 B: 关键词变了 或者 数据源变了  -> 需要重新过滤
 
         // 1. 重新执行过滤
         const results = (dataSource ?? []).filter(
@@ -164,7 +155,13 @@
        * 搜索
        */
       function handleSearch() {
-        const { results } = searchAndNext();
+        const inputEl = document.getElementById("searchInput");
+        const keyword = inputEl.value.trim().toUpperCase();
+        if (!keyword) {
+          alert('请输入关键词');
+          return;
+        }
+        const { results } = searchAndNext(keyword);
         // 展示搜索结果
         showResult(results);
       }
@@ -172,7 +169,7 @@
       /**
        * 刷新数据源
        */
-      function handleFresh() {
+      function handleFreshData() {
         // 随机抽取 15 条数据作为当前数据源
         dataSource = getRandomSubset(DATA_POOL, 15);
         dataStamp = Date.now();
@@ -182,14 +179,15 @@
        * 初始化
        */
       document.addEventListener("DOMContentLoaded", () => {
-        handleFresh();
+        // 刷新数据源
+        handleFreshData();
         // 绑定事件
         document
           .getElementById("searchBtn")
           .addEventListener("click", handleSearch);
         document
           .getElementById("freshBtn")
-          .addEventListener("click", handleFresh);
+          .addEventListener("click", handleFreshData);
       });
     </script>
   </body>
