@@ -22,8 +22,8 @@
         match(code) {
           return false;
         }
-        execute(item, code) {
-          return false;
+        filter(data, code) {
+          return data;
         }
       }
 
@@ -39,8 +39,8 @@
         match(code) {
           return code === this.code;
         }
-        execute(item) {
-          return item.isInternational === true;
+        filter(data) {
+          return data.filter((item) => item.isInternational === true);
         }
       }
 
@@ -54,8 +54,8 @@
         match(code) {
           return code === this.code;
         }
-        execute(item) {
-          return item.status === "CANCELLED";
+        filter(data) {
+          return data.filter((item) => item.status === "CANCELLED");
         }
       }
 
@@ -76,17 +76,22 @@
         match(code) {
           return AirportCommand.PATTERN.test(code);
         }
-        execute(item, code) {
+        filter(data, code) {
           const airportCode = code.replace(/-/g, "");
-          // 后缀 - 表示出发，前缀 - 表示到达，无前后缀表示双向
           let direction = "BOTH";
           if (code.endsWith("-")) direction = "DEPARTURE";
           else if (code.startsWith("-")) direction = "ARRIVAL";
 
-          if (direction === "BOTH") return item.departure === airportCode || item.arrival === airportCode;
-          if (direction === "DEPARTURE") return item.departure === airportCode;
-          if (direction === "ARRIVAL") return item.arrival === airportCode;
-          return false;
+          return data.filter((item) => {
+            if (direction === "BOTH")
+              return (
+                item.departure === airportCode || item.arrival === airportCode
+              );
+            if (direction === "DEPARTURE")
+              return item.departure === airportCode;
+            if (direction === "ARRIVAL") return item.arrival === airportCode;
+            return false;
+          });
         }
       }
 
@@ -102,16 +107,22 @@
         match(code) {
           return DurationCommand.PATTERN.test(code);
         }
-        execute(item, code) {
+        filter(data, code) {
           const [, operator, value] = code.match(DurationCommand.PATTERN);
           const limit = parseFloat(value);
           switch (operator) {
-            case ">":  return item.duration > limit;
-            case ">=": return item.duration >= limit;
-            case "<":  return item.duration < limit;
-            case "<=": return item.duration <= limit;
-            case "=":  return item.duration === limit;
-            default:   return false;
+            case ">":
+              return data.filter((item) => item.duration > limit);
+            case ">=":
+              return data.filter((item) => item.duration >= limit);
+            case "<":
+              return data.filter((item) => item.duration < limit);
+            case "<=":
+              return data.filter((item) => item.duration <= limit);
+            case "=":
+              return data.filter((item) => item.duration === limit);
+            default:
+              return [];
           }
         }
       }
@@ -129,14 +140,16 @@
         match(code) {
           return AircraftNoCommand.PATTERN.test(code);
         }
-        execute(item, code) {
+        filter(data, code) {
           const normalize = (s) => {
             const cleaned = s.replace(/-/g, "").toUpperCase();
             return cleaned.startsWith("B") ? cleaned.substring(1) : cleaned;
           };
-          const target = normalize(item.regNo || "");
           const query = normalize(code);
-          return target === query;
+          return data.filter((item) => {
+            const target = normalize(item.regNo || "");
+            return target === query;
+          });
         }
       }
 
@@ -154,14 +167,70 @@
         match(code) {
           return FlightNoCommand.PATTERN.test(code);
         }
-        execute(item, code) {
-          return (item.flightNo || "").includes(code);
+        filter(data, code) {
+          return data.filter((item) => (item.flightNo || "").includes(code));
         }
+      }
+
+      // --- 集合工具函数 ---
+
+      /** 交集 */
+      function intersect(a, b) {
+        const sb = new Set(b.map((item) => item.id));
+        return a.filter((item) => sb.has(item.id));
+      }
+
+      /** 并集 */
+      function union(a, b) {
+        const sa = new Set(a.map((item) => item.id));
+        return [...a, ...b.filter((item) => !sa.has(item.id))];
+      }
+
+      /** 补集 */
+      function complement(a, universe) {
+        const sa = new Set(a.map((item) => item.id));
+        return universe.filter((item) => !sa.has(item.id));
+      }
+
+      /** 空结果集 */
+      const EMPTY_RESULT = [];
+
+      // --- 结果解析 ---
+
+      /** 对所有 OR 组求值后取并集 */
+      function evaluate(orGroups, data) {
+        return orGroups
+          .map((group) => evaluateAndGroup(group, data))
+          .reduce((acc, cur) => union(acc, cur), EMPTY_RESULT);
+      }
+
+      /** 对 AND 组内各项求值后取交集，支持取反 */
+      function evaluateAndGroup(groups, data) {
+        const results = groups.map((group) => {
+          const rs =
+            group.commands.length > 0
+              ? group.commands.reduce(
+                  (acc, cmd) => union(acc, cmd.filter(data, group.code)),
+                  EMPTY_RESULT,
+                )
+              : EMPTY_RESULT;
+          return group.negated ? complement(rs, data) : rs;
+        });
+
+        if (results.length === 0) return EMPTY_RESULT;
+
+        return results.reduce((acc, cur) => intersect(acc, cur));
+      }
+
+      /** 将结果数组按原始数据顺序还原 */
+      function resolveResult(result, data) {
+        const ids = new Set(result.map((item) => item.id));
+        return data.filter((item) => ids.has(item.id));
       }
 
       /**
        * 航班搜索引擎
-       * 每个指令对单项数据返回 true/false，引擎再用 some/every 嵌套实现 AND/OR 逻辑
+       * 每个指令对全部数据执行过滤返回结果集，再用集合操作（交集/并集/补集）组合结果
        */
       class FlightSearchEngine {
         /** 已注册的指令列表 */
@@ -188,6 +257,7 @@
         setMatchMode(mode) {
           this.matchMode = mode;
         }
+
         /**
          * 分词：将搜索关键词拆解为嵌套逻辑结构，同时完成指令匹配
          * 逗号分隔为 OR 组，星号分隔为 AND 项，! 前缀表示取反
@@ -217,42 +287,18 @@
         }
 
         /**
-         * 判断数据项是否匹配 token 结构
-         * 输入: item + tokenize 输出的二维逻辑数组
-         *   priority 模式: 单指令判定
-         *   all 模式: 多个命中指令任一通过即匹配
-         */
-        hit(item, orGroups) {
-          return orGroups.some((andGroup) => {
-            return andGroup.every((condition) => {
-              const { code, commands, negated } = condition;
-              if (!commands.length) return false;
-              const result = commands.some((cmd) => cmd.execute(item, code));
-              return negated ? !result : result;
-            });
-          });
-        }
-
-        /**
          * 主搜索函数
-         * 流程: 输入校验 → 标准化 → 词法分析(拆解逻辑结构) → 逐条匹配 → 返回结果
+         * 流程: 输入校验 → 标准化 → 词法分析 → 集合运算(并集/交集/补集) → 返回结果
          */
-        search(keyword, data, options = {}) {
-          // 空关键词直接返回空数组
+        search(keyword, data) {
           if (!keyword || typeof keyword !== "string" || !keyword.trim()) {
             return { flightList: [] };
           }
 
-          // 标准化: 去首尾空格并转大写
           const cleanKeyword = keyword.trim().toUpperCase();
-          // 词法分析: 将关键词拆解为嵌套逻辑结构 [[condition, ...], ...]
           const orGroups = this.tokenize(cleanKeyword);
-          // 逐条匹配: 对每条数据执行条件树判定
-          const filterItem = (item) => this.hit(item, orGroups);
-
-          return {
-            flightList: data.filter(filterItem),
-          };
+          const result = evaluate(orGroups, data);
+          return { flightList: resolveResult(result, data) };
         }
       }
 
