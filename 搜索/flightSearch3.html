@@ -22,7 +22,7 @@
         match(code) {
           return false;
         }
-        filter(data, code, negated = false) {
+        filter(data, code) {
           return data;
         }
       }
@@ -39,8 +39,8 @@
         match(code) {
           return code === this.code;
         }
-        filter(data, code, negated = false) {
-          return data.filter((item) => negated !== (item.isInternational === true));
+        filter(data) {
+          return data.filter((item) => item.isInternational === true);
         }
       }
 
@@ -54,8 +54,8 @@
         match(code) {
           return code === this.code;
         }
-        filter(data, code, negated = false) {
-          return data.filter((item) => negated !== (item.status === "CANCELLED"));
+        filter(data) {
+          return data.filter((item) => item.status === "CANCELLED");
         }
       }
 
@@ -76,22 +76,21 @@
         match(code) {
           return AirportCommand.PATTERN.test(code);
         }
-        filter(data, code, negated = false) {
+        filter(data, code) {
           const airportCode = code.replace(/-/g, "");
           let direction = "BOTH";
           if (code.endsWith("-")) direction = "DEPARTURE";
           else if (code.startsWith("-")) direction = "ARRIVAL";
 
           return data.filter((item) => {
-            let match;
             if (direction === "BOTH")
-              match = item.departure === airportCode || item.arrival === airportCode;
-            else if (direction === "DEPARTURE")
-              match = item.departure === airportCode;
-            else if (direction === "ARRIVAL")
-              match = item.arrival === airportCode;
-            else match = false;
-            return negated !== match;
+              return (
+                item.departure === airportCode || item.arrival === airportCode
+              );
+            if (direction === "DEPARTURE")
+              return item.departure === airportCode;
+            if (direction === "ARRIVAL") return item.arrival === airportCode;
+            return false;
           });
         }
       }
@@ -108,21 +107,23 @@
         match(code) {
           return DurationCommand.PATTERN.test(code);
         }
-        filter(data, code, negated = false) {
+        filter(data, code) {
           const [, operator, value] = code.match(DurationCommand.PATTERN);
           const limit = parseFloat(value);
-          return data.filter((item) => {
-            let match;
-            switch (operator) {
-              case ">":  match = item.duration > limit; break;
-              case ">=": match = item.duration >= limit; break;
-              case "<":  match = item.duration < limit; break;
-              case "<=": match = item.duration <= limit; break;
-              case "=":  match = item.duration === limit; break;
-              default: match = false;
-            }
-            return negated !== match;
-          });
+          switch (operator) {
+            case ">":
+              return data.filter((item) => item.duration > limit);
+            case ">=":
+              return data.filter((item) => item.duration >= limit);
+            case "<":
+              return data.filter((item) => item.duration < limit);
+            case "<=":
+              return data.filter((item) => item.duration <= limit);
+            case "=":
+              return data.filter((item) => item.duration === limit);
+            default:
+              return [];
+          }
         }
       }
 
@@ -139,7 +140,7 @@
         match(code) {
           return AircraftNoCommand.PATTERN.test(code);
         }
-        filter(data, code, negated = false) {
+        filter(data, code) {
           const normalize = (s) => {
             const cleaned = s.replace(/-/g, "").toUpperCase();
             return cleaned.startsWith("B") ? cleaned.substring(1) : cleaned;
@@ -147,7 +148,7 @@
           const query = normalize(code);
           return data.filter((item) => {
             const target = normalize(item.regNo || "");
-            return negated !== (target === query);
+            return target === query;
           });
         }
       }
@@ -166,8 +167,8 @@
         match(code) {
           return FlightNoCommand.PATTERN.test(code);
         }
-        filter(data, code, negated = false) {
-          return data.filter((item) => negated !== ((item.flightNo || "").includes(code)));
+        filter(data, code) {
+          return data.filter((item) => (item.flightNo || "").includes(code));
         }
       }
 
@@ -185,6 +186,12 @@
         return [...a, ...b.filter((item) => !sa.has(item.id))];
       }
 
+      /** 补集 */
+      function complement(a, universe) {
+        const sa = new Set(a.map((item) => item.id));
+        return universe.filter((item) => !sa.has(item.id));
+      }
+
       /** 空结果集 */
       const EMPTY_RESULT = [];
 
@@ -197,17 +204,21 @@
           .reduce((acc, cur) => union(acc, cur), EMPTY_RESULT);
       }
 
-      /** 对 AND 组内各项求值后取交集 */
+      /** 对 AND 组内各项求值后取交集，支持取反 */
       function evaluateAndGroup(groups, data) {
         const results = groups.map((group) => {
-          if (group.commands.length === 0) return EMPTY_RESULT;
-          return group.commands.reduce(
-            (acc, cmd) =>
-              union(acc, cmd.filter(data, group.code, group.negated)),
-            EMPTY_RESULT,
-          );
+          const rs =
+            group.commands.length > 0
+              ? group.commands.reduce(
+                  (acc, cmd) => union(acc, cmd.filter(data, group.code)),
+                  EMPTY_RESULT,
+                )
+              : EMPTY_RESULT;
+          return group.negated ? complement(rs, data) : rs;
         });
+
         if (results.length === 0) return EMPTY_RESULT;
+
         return results.reduce((acc, cur) => intersect(acc, cur));
       }
 
@@ -219,7 +230,7 @@
 
       /**
        * 航班搜索引擎
-       * 每个指令对全部数据执行过滤返回结果集，再用集合操作（交集/并集）组合结果
+       * 每个指令对全部数据执行过滤返回结果集，再用集合操作（交集/并集/补集）组合结果
        */
       class FlightSearchEngine {
         /** 已注册的指令列表 */
@@ -277,7 +288,7 @@
 
         /**
          * 主搜索函数
-         * 流程: 输入校验 → 标准化 → 分词 → 集合运算(并集/交集) → 结果解析 → 返回结果
+         * 流程: 输入校验 → 标准化 → 词法分析 → 集合运算(并集/交集/补集) → 返回结果
          */
         search(keyword, data) {
           if (!keyword || typeof keyword !== "string" || !keyword.trim()) {
