@@ -6,7 +6,6 @@ type DataType = Record<string, any>;
 
 interface FilterType {
   schDept?: string[]
-  accredit?: string[];
   specificAirport?: string[];
   country?: string[];
 }
@@ -18,7 +17,6 @@ type ConditionFun<T> = (item: T) => boolean;
 interface FilterConfig {
   key: keyof FilterType;
   filter: FilterFun<DataType>;
-  requiresContext?: boolean;
 }
 
 // 部门
@@ -26,17 +24,6 @@ const schDept: FilterFun<DataType> = (item, filter) => {
   if (!filter.schDept?.length) return true;
 
   return filter.schDept.includes(item.person?.schDeptId ?? '');
-};
-
-
-// 授权
-const accredit: FilterFun<DataType> = (item, filter) => {
-  if (!filter.accredit?.length) return true;
-
-  return (
-    item.accredits?.some((accredit) => accredit.accreditCode && filter.accredit!.includes(accredit.accreditCode)) ??
-    false
-  );
 };
 
 // 机场放单
@@ -60,13 +47,12 @@ const country: FilterFun<DataType> = (item, filter) => {
 // 过滤条件注册表
 const filterConfigs: FilterConfig[] = [
   { key: 'schDept', filter: schDept },
-  { key: 'accredit', filter: accredit },
-  { key: 'specificAirport', filter: specificAirport, requiresContext: true },
+  { key: 'specificAirport', filter: specificAirport },
   { key: 'country', filter: country },
 ];
 
 // 创建过滤条件
-const createFilterConditions = (filter: FilterType, context: Record<string, any>) => {
+const createFilterConditions = (filter: FilterType, context?: Record<string, any>) => {
   const conditions: ConditionFun<DataType>[] = [];
 
   filterConfigs.forEach((config) => {
@@ -74,17 +60,13 @@ const createFilterConditions = (filter: FilterType, context: Record<string, any>
     const filterValue = filter[config.key];
     const hasValue = Array.isArray(filterValue)
       ? filterValue.length > 0
-      : filterValue !== undefined && filterValue !== null && filterValue !== '' && filterValue !== false;
-
-    // 检查是否需要上下文
-    const isRequiredContext = config.requiresContext;
+      : filterValue !== undefined &&
+        filterValue !== null &&
+        filterValue !== '' &&
+        filterValue !== false;
 
     if (hasValue) {
-      if (isRequiredContext) {
-        conditions.push((item) => config.filter(item, filter, context));
-      } else {
-        conditions.push((item) => config.filter(item, filter));
-      }
+      conditions.push((item) => config.filter(item, filter, context));
     }
   });
 
@@ -92,20 +74,19 @@ const createFilterConditions = (filter: FilterType, context: Record<string, any>
 };
 
 export default function filterData(
-  dataSource: Array<DataType>,
+  dataSource: DataType[],
   filter: FilterType,
-  date: string,
   airportMap: Record<string, any>,
 ) {
   // 创建上下文
-  const context = { date, airportMap };
+  const context = { airportMap };
 
   // 创建过滤条件
   const conditions = createFilterConditions(filter, context);
 
-  // 应用所有过滤条件
-  const filterList =
-    conditions.length > 0 ? dataSource.filter((item) => conditions.every((condition) => condition(item))) : dataSource;
+  if (conditions.length === 0) return dataSource;
 
-  return filterList;
+  return dataSource.filter((item) =>
+    conditions.every((condition) => condition(item)),
+  );
 }
