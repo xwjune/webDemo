@@ -12,13 +12,13 @@
         background-size: 50px 50px;
         background-color: white;
       }
-      .top .grid, 
+      .top .grid,
       .top2 .grid {
         height: 50px;
         background-image: linear-gradient(to right, rgba(255, 0, 0, 0.5) 1px, transparent 0),
           linear-gradient(rgba(255, 0, 0, 0.5) 1px, transparent 0);
       }
-      .top, 
+      .top,
       .main,
       .box {
         overflow: auto;
@@ -46,10 +46,10 @@
       </div>
     </div>
     <script>
+      const topEl = document.querySelector('.top');
       document.querySelector('.main').addEventListener('scroll', (e) => {
         const left = e.target.scrollLeft;
-        console.log(left);
-        document.querySelector('.top').scrollTo(left, 0);
+        topEl.scrollTo(left, 0);
       });
     </script>
   </body>

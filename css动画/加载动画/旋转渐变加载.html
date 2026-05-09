@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>旋转渐变加载</title>
+    <style>
+      .loader {
+        width: 100px;
+        height: 100px;
+        background: conic-gradient(#0000, #3498db);
+        border-radius: 50%;
+        mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+        animation: rotate 1s infinite linear;
+      }
+
+      @keyframes rotate {
+        to { transform: rotate(1turn); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader"></div>
+  </body>
+</html>
