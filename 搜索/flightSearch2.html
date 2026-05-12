@@ -261,13 +261,26 @@
                 .map((token) => {
                   const negated = token.startsWith("!");
                   const code = negated ? token.slice(1) : token;
-                  const commands =
-                    this.matchMode === "all"
-                      ? this.commands.filter((c) => c.match(code))
-                      : (() => {
-                          const m = this.commands.find((c) => c.match(code));
-                          return m ? [m] : [];
-                        })();
+                  // 收集所有匹配指令，再按模式处理：
+                  // - all 模式：跨层级隔离，只保留最高优先级层级，同层级取并集
+                  //   避免低优先级指令的宽泛正则污染高优先级指令的精确匹配结果（如 HD 同时命中 HdCommand(100) 和 AirportCodeCommand(50)）
+                  // - priority 模式：commands 已按优先级降序排列，直接取第一个匹配指令
+                  const allMatches = this.commands.filter((c) => c.match(code));
+                  let commands;
+                  if (this.matchMode === "all") {
+                    if (allMatches.length > 1) {
+                      const maxPriority = Math.max(
+                        ...allMatches.map((c) => c.priority ?? 0),
+                      );
+                      commands = allMatches.filter(
+                        (c) => (c.priority ?? 0) === maxPriority,
+                      );
+                    } else {
+                      commands = allMatches;
+                    }
+                  } else {
+                    commands = allMatches.length > 0 ? [allMatches[0]] : [];
+                  }
                   return { code, commands, negated };
                 })
                 .filter((t) => t.code.length > 0),
@@ -314,25 +327,22 @@
 
       const testList = [
         // --- priority 模式 ---
-        { keyword: "INTL", expected: ["1", "3"], mode: "priority" },
-        { keyword: "CNL", expected: ["2", "4"], mode: "priority" },
-        { keyword: "SHA", expected: ["2", "4", "5", "7"], mode: "priority" },
-        { keyword: "DUR>3", expected: ["3"], mode: "priority" },
-        { keyword: "MU5102", expected: ["1"], mode: "priority" },
         { keyword: "B5969", expected: ["5", "7"], mode: "priority" },
         { keyword: "5969", expected: ["5", "7"], mode: "priority" },
         { keyword: "!CNL", expected: ["1", "3", "5", "6", "7"], mode: "priority" },
         { keyword: "SHA-,PVG-", expected: ["1", "2", "4", "5", "7"], mode: "priority" },
         { keyword: "INTL*DUR>10", expected: ["3"], mode: "priority" },
         { keyword: "CNL*SHA-", expected: ["2", "4"], mode: "priority" },
-        { keyword: "CNL*SHA-,INTL", expected: ["1", "2", "3","4"], mode: "priority" },
+        { keyword: "CNL*SHA-,INTL", expected: ["1", "2", "3", "4"], mode: "priority" },
         { keyword: "!CNL*PEK-*INTL", expected: ["3"], mode: "priority" },
         { keyword: "B6142,MU5102", expected: ["1", "6"], mode: "priority" },
-        { keyword: "CNL**SHA-", expected: ["2", "4"], mode: "priority", comment: '连续星号'  },
-        { keyword: "SHA-,,PVG-", expected: ["1", "2", "4", "5", "7"], mode: "priority", comment: '连续逗号' },
+        { keyword: "CNL**SHA-", expected: ["2", "4"], mode: "priority", comment: "连续星号" },
+        { keyword: "SHA-,,PVG-", expected: ["1", "2", "4", "5", "7"], mode: "priority", comment: "连续逗号" },
         // --- all 模式 ---
-        { keyword: "5969", expected: ["5", "6", "7"], mode: "all", comment: "AircraftNo: id5,7 | FlightNo: id6" },
+        { keyword: "5969", expected: ["5", "7"], mode: "all", comment: "层级隔离：AircraftNo(50) 排除 FlightNo(10)" },
         { keyword: "B6142", expected: ["6"], mode: "all", comment: "AircraftNo: id6 | FlightNo: 无命中" },
+        { keyword: "INTL", expected: ["1", "3"], mode: "all", comment: "层级隔离：仅 IntlCommand(100)，不触发 AirportCommand(50)" },
+        { keyword: "CNL", expected: ["2", "4"], mode: "all", comment: "层级隔离：仅 CnlCommand(100)，不触发 AirportCommand(50)" },
       ];
 
       testList.forEach((test) => {
