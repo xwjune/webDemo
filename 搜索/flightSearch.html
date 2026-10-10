@@ -155,7 +155,12 @@
           return FlightNoCommand.PATTERN.test(code);
         }
         execute(item, code) {
-          return (item.flightNo || "").includes(code);
+          // 精确匹配：带承运人前缀直接比对；纯数字比对航班号数字部分，
+          // 避免子串误命中（MU510 命中 MU5102、510 命中 5102）
+          const flightNo = (item.flightNo || "").toUpperCase();
+          if (/^[A-Z]/.test(code)) return flightNo === code;
+          const m = flightNo.match(/^[A-Z]{2}(\d{3,4})$/);
+          return !!m && m[1] === code;
         }
       }
 
@@ -288,6 +293,7 @@
         { id: "5", flightNo: "FM9313", departure: "SHA", arrival: "CAN", regNo: "B5969", duration: 2, status: "SCHEDULED", isInternational: false },
         { id: "6", flightNo: "MU5969", departure: "KMG", arrival: "ZAT", regNo: "B6142", duration: 1.5, status: "SCHEDULED", isInternational: false },
         { id: "7", flightNo: "FM9331", departure: "SHA", arrival: "SZX", regNo: "B5969", duration: 2.5, status: "SCHEDULED", isInternational: false },
+        { id: "8", flightNo: "MU510", departure: "KMG", arrival: "DLU", regNo: "B30AE", duration: 2, status: "SCHEDULED", isInternational: false },
       ];
 
       const testList = [
@@ -297,9 +303,11 @@
         { keyword: "SHA", expected: ["2", "4", "5", "7"], mode: "priority" },
         { keyword: "DUR>3", expected: ["3"], mode: "priority" },
         { keyword: "MU5102", expected: ["1"], mode: "priority" },
+        { keyword: "MU510", expected: [], mode: "priority", comment: "层级隔离：5 位字母数字被飞机号(50)认领，不触发航班号(10)" },
+        { keyword: "510", expected: ["8"], mode: "priority", comment: "纯数字补承运人：510 → MU510，精确不误中 MU5102" },
         { keyword: "B5969", expected: ["5", "7"], mode: "priority" },
         { keyword: "5969", expected: ["5", "7"], mode: "priority" },
-        { keyword: "!CNL", expected: ["1", "3", "5", "6", "7"], mode: "priority" },
+        { keyword: "!CNL", expected: ["1", "3", "5", "6", "7", "8"], mode: "priority" },
         { keyword: "SHA-,PVG-", expected: ["1", "2", "4", "5", "7"], mode: "priority" },
         { keyword: "INTL*DUR>10", expected: ["3"], mode: "priority" },
         { keyword: "CNL*SHA-", expected: ["2", "4"], mode: "priority" },
